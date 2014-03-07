@@ -54,7 +54,7 @@ App.prototype._wire = function() {
 
   //map events
   this.map.on('click', function(e) {
-    self._getDistrict(e);
+    self._getLegByLatLong(e);
   });
 
   this.map.on('hover', function(e) {
@@ -63,14 +63,19 @@ App.prototype._wire = function() {
 
 }
 
-App.prototype._getDistrict = function(e) {
+App.prototype._getLegByLatLong = function(e) {
   require(["esri/graphic",
     "esri/symbols/PictureMarkerSymbol"],
-    //"api/SunlightCongressAPI"],
     function (Graphic, PictureMarkerSymbol) {
 
-      var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude=42.96&longitude=-108.09&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+      //get lat lon
+      var mapPoint = e.mapPoint;
+      var lon = mapPoint.getLongitude().toFixed(2);
+      var lat = mapPoint.getLatitude().toFixed(2);
 
+      var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude="+lat+"&longitude="+lon+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+
+      //sunlight api lookup
       $.getJSON(url, function(data) {
         $.each(data.results, function(i, rep) {
           console.log('rep', rep);
