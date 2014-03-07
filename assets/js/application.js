@@ -23,7 +23,8 @@ App.prototype.initMap = function() {
     self.map = new Map("map", {
       center: [-90.049, 38.485],
       zoom: 4,
-      basemap: "dotted"
+      basemap: "dotted",
+      smartNavigation: false
     });
 
     //add districts
@@ -67,32 +68,18 @@ App.prototype._getDistrict = function(e) {
     "esri/symbols/PictureMarkerSymbol"],
     //"api/SunlightCongressAPI"],
     function (Graphic, PictureMarkerSymbol) {
-       //var congressAPI = new SunlightCongressAPI();
 
-       //console.log('click me', congressAPI)
-       /*
-       kernel.global.geocodeLayer.clear();
-       kernel.global.graphicsLayer.clear();
+      var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude=42.96&longitude=-108.09&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
-       var mapPoint;
+      $.getJSON(url, function(data) {
+        $.each(data.results, function(i, rep) {
+          console.log('rep', rep);
+          $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
+          $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
+          $($('.legislator')[ i ]).show();
+        });
+      });
 
-       if (mouseEvent) {
-           mapPoint = mouseEvent.mapPoint;
-       } else if (graphic) {
-           mapPoint = graphic.geometry.getCentroid();
-       }
-
-       kernel.global.enteredLocation = mapPoint;
-       kernel.global.enteredZipCode = null;
-       kernel.global.geocodeText = mapPoint.getLongitude().toFixed(2) + ", " + mapPoint.getLatitude().toFixed(2);
-
-       congressAPI.getLegislatorsByLocation(mapPoint).then(function (r) {
-           //console.log("RESULTS!!!!!: ", r);
-           displayLegislatorsByLocation(r.results);
-       }, function (e) {
-           console.warn("ERROR :", e.message);
-       });
-      */
    });
 }
 
