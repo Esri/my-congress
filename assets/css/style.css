@@ -1,0 +1,43 @@
+body {
+  padding-top: 50px;
+  background-color:#444;
+}
+
+/*
+* Navigation
+*
+*/
+.form-group {
+  margin-right: 20px;
+}
+.form-group input {
+  min-width:300px;
+}
+
+
+/*
+* Map
+*
+*/
+#map-container {
+  height:100%;
+  width:100%;
+  overflow: hidden;
+}
+
+#map {
+  height:100%;
+}
+
+
+/*
+* Footer
+*
+*/
+#footer {
+  width:100%;
+  min-height:200px;
+  bottom:0px;
+  background-color:#f8f8f8;
+  border-top:1px solid #e7e7e7;
+}
