@@ -26,7 +26,7 @@ App.prototype.initMap = function() {
       basemap: "dotted"
     });
 
-    //add ditrictus
+    //add districts
     var districtsUrl = "http://dcdev.esri.com/arcgis/rest/services/Congress/DistrictsByParty/MapServer";
     var districtsLayer = new ArcGISTiledMapServiceLayer(districtsUrl, {
       opacity: 0.8
