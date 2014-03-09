@@ -49,6 +49,12 @@ App.prototype.initMap = function() {
 
 }
 
+
+
+/*
+* Wire events within map
+* Setup search and typeahead
+*/ 
 App.prototype._wire = function() {
   var self = this;
 
@@ -86,6 +92,12 @@ App.prototype._wire = function() {
 
 }
 
+
+
+/*
+* Get legislator by point on map [ via mapClick ]
+*
+*/ 
 App.prototype._getLegByLatLong = function(e) {
   require(["esri/graphic",
     "esri/symbols/PictureMarkerSymbol"],
@@ -111,14 +123,20 @@ App.prototype._getLegByLatLong = function(e) {
    });
 }
 
+
+
+/*
+* Get legislator by first name -- matches with last
+*
+*/ 
 App.prototype._getLegByName = function(name) {
   
   var first_name = name.split(' ')[ 0 ];
   var last_name = name.split(' ')[ 1 ];
-  console.log('first', first_name);
+
+  //sunlight api lookup by NAME
   var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
-  //sunlight api lookup
   $.getJSON(url, function(data) {
     $.each(data.results, function(i, rep) {
       if ( rep.last_name === last_name ) {
