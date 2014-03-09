@@ -61,6 +61,29 @@ App.prototype._wire = function() {
     //self._getDistrict(e);
   });
 
+  //typeahead search
+  //get all legislators
+  var url = "https://congress.api.sunlightfoundation.com/legislators?all_legislators=true&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+
+  //sunlight api lookup
+  this.legislators = [];
+  $.getJSON(url, function(data) {
+    
+    $.each(data.results, function(i, rep) {
+      self.legislators.push(rep.first_name + ' ' + rep.last_name);
+    });
+
+    $('#search-reps').typeahead({
+      name: "reps",
+      local: self.legislators
+    });
+
+  });
+
+  $('#search-reps').on('typeahead:selected', function(e,data) {
+    self._getLegByName(data.value);
+  });
+
 }
 
 App.prototype._getLegByLatLong = function(e) {
@@ -87,4 +110,22 @@ App.prototype._getLegByLatLong = function(e) {
 
    });
 }
+
+App.prototype._getLegByName = function(name) {
+  
+  var first_name = name.split(' ')[ 0 ];
+  var last_name = name.split(' ')[ 1 ];
+  console.log('first', first_name);
+  var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+
+  //sunlight api lookup
+  $.getJSON(url, function(data) {
+    $.each(data.results, function(i, rep) {
+      if ( rep.last_name === last_name ) {
+        console.log('selected legislator', rep)
+      }
+    });
+  });
+  
+};
 
