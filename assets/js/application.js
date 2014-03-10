@@ -21,7 +21,7 @@ App.prototype.initMap = function() {
     };
 
     self.map = new Map("map", {
-      center: [-90.049, 38.485],
+      center: [-92.049, 41.485],
       zoom: 4,
       basemap: "dotted",
       smartNavigation: false
@@ -44,6 +44,8 @@ App.prototype.initMap = function() {
     });
 
     self._wire();
+    self._getAllLegNames();
+    self._getAllCommittees();
 
   });
 
@@ -68,8 +70,40 @@ App.prototype._wire = function() {
   });
 
   //typeahead search
-  //get all legislators
-  var url = "https://congress.api.sunlightfoundation.com/legislators?all_legislators=true&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  $('#search-reps').on('typeahead:selected', function(e,data) {
+    self._getLegByName(data.value);
+  });
+
+  //zipcode search
+  $('#search-reps').on('keydown', function(e) {
+    if ( e.keyCode === 13 ) {
+      self._getLegByZipcode($(this).val());
+    }
+  });
+
+  //bind legislator name click for GET committees
+  $('.legislator').on('click mouseenter', function(e) {
+    var name = $(this).find('.media-heading').html();
+    self._showCommittees(name.split('.')[1]);
+  });
+
+  $( document ).ajaxStart(function() {
+    NProgress.start();
+  });
+
+  $( document ).ajaxStop(function() {
+    NProgress.done();
+  });
+}
+
+
+/*
+* Get ALL member names
+*
+*/ 
+App.prototype._getAllLegNames = function() {
+  var self = this;
+  var url = "https://congress.api.sunlightfoundation.com/legislators?per_page=all&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
   //sunlight api lookup
   this.legislators = [];
@@ -86,12 +120,22 @@ App.prototype._wire = function() {
 
   });
 
-  $('#search-reps').on('typeahead:selected', function(e,data) {
-    self._getLegByName(data.value);
-  });
-
 }
 
+
+/*
+* Get ALL committees
+*
+*/ 
+App.prototype._getAllCommittees = function() {
+  var self = this;
+
+  var url = "https://congress.api.sunlightfoundation.com/committees?per_page=all&fields=members,name&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  $.getJSON(url, function(data) {
+    console.log('data', data)
+    self.allCommittees = data;
+  });
+}
 
 
 /*
@@ -99,28 +143,41 @@ App.prototype._wire = function() {
 *
 */ 
 App.prototype._getLegByLatLong = function(e) {
-  require(["esri/graphic",
-    "esri/symbols/PictureMarkerSymbol"],
-    function (Graphic, PictureMarkerSymbol) {
+  var self = this;
 
-      //get lat lon
-      var mapPoint = e.mapPoint;
-      var lon = mapPoint.getLongitude().toFixed(2);
-      var lat = mapPoint.getLatitude().toFixed(2);
+  var mapPoint = e.mapPoint;
+  var lon = mapPoint.getLongitude().toFixed(2);
+  var lat = mapPoint.getLatitude().toFixed(2);
 
-      var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude="+lat+"&longitude="+lon+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude="+lat+"&longitude="+lon+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
-      //sunlight api lookup
-      $.getJSON(url, function(data) {
-        $.each(data.results, function(i, rep) {
-          console.log('rep', rep);
-          $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
-          $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
-          $($('.legislator')[ i ]).show();
-        });
+  //sunlight api lookup
+  $.getJSON(url, function(data) {
+    
+    self.committees = {}; //reset committees array
+    $('.legislator').hide(); //hide previous selection
+    $('.media-object').show(); //make sure all images are viz
+    $('.glyphicon-user').hide();
+
+    $.each(data.results, function(i, rep) {
+      console.log('rep', rep);
+      self._getCommittees(rep);
+      //<span class="glyphicon glyphicon-user"></span>
+      $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
+      $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
+      $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
+      $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "unknown" );
+      $($('.legislator')[ i ]).show();
+
+      $("img").error(function () {
+        $(this).parent().parent().find('.glyphicon-user').show();
+        $(this).unbind("error").hide(); //attr("src", "broken.gif");
       });
 
-   });
+    });
+
+  });
+
 }
 
 
@@ -130,7 +187,8 @@ App.prototype._getLegByLatLong = function(e) {
 *
 */ 
 App.prototype._getLegByName = function(name) {
-  
+  var self = this;
+
   var first_name = name.split(' ')[ 0 ];
   var last_name = name.split(' ')[ 1 ];
 
@@ -138,12 +196,158 @@ App.prototype._getLegByName = function(name) {
   var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
   $.getJSON(url, function(data) {
+    
+    self.committees = {}; //reset committees array
+    $('.legislator').hide(); //hide previous selection
+    $('.media-object').show(); //make sure all images are viz
+    $('.glyphicon-user').hide();
+
     $.each(data.results, function(i, rep) {
       if ( rep.last_name === last_name ) {
-        console.log('selected legislator', rep)
+        self._getCommittees(rep);
+        $('.legislator').hide();
+        $($('.legislator')[ 0 ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
+        $($('.legislator')[ 0 ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
+        $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
+        $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "unknown" );
+        $($('.legislator')[ 0 ]).show();
       }
+
+      $("img").error(function () {
+        $(this).parent().parent().find('.glyphicon-user').show();
+        $(this).unbind("error").hide(); //attr("src", "broken.gif");
+      });
+
     });
+
   });
   
 };
+
+/*
+* Get legislator by first name -- matches with last
+*
+*/ 
+App.prototype._getLegByZipcode = function(zipcode) {
+  var self = this;
+  
+  var url = "https://congress.api.sunlightfoundation.com/legislators/locate?zip="+zipcode+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+
+  //sunlight api lookup
+  $.getJSON(url, function(data) {
+    
+    self.committees = {}; //reset committees array
+    $('.legislator').hide(); //hide previous selection
+
+    $.each(data.results, function(i, rep) {
+      self._getCommittees(rep);
+      $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
+      $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
+      $($('.legislator')[ i ]).show();
+    });
+
+  });
+
+  
+};
+
+/*
+* Get committees
+*
+*/ 
+App.prototype._getCommittees = function(rep) {
+  var self = this;
+
+  //committee by member id url
+  var url = "https://congress.api.sunlightfoundation.com/committees?member_ids="+rep.bioguide_id+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+
+  //get all committees for member
+  var member = (rep.first_name + rep.last_name).replace(/ /g, '');
+
+  this.committees[ member ] = { committees: [] };
+  
+  $.getJSON(url, function(data) {
+    self.committees[ member ].committees = data.results;
+  });
+
+}
+
+/*
+* Get members OF a committee
+*
+*/ 
+App.prototype._getCommitteeMembers = function(rep) {
+  var self = this;
+
+  //committee by member id url
+  var url = "https://congress.api.sunlightfoundation.com/committees?member_ids="+rep.bioguide_id+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+
+  //get all committees for member
+  var member = (rep.first_name + rep.last_name).replace(/ /g, '');
+
+  this.committees[ member ] = { committees: [] };
+  
+  $.getJSON(url, function(data) {
+    self.committees[ member ].committees = data.results;
+  });
+
+}
+
+
+/*
+* Show committees
+*
+*/ 
+App.prototype._showCommittees = function(name) {
+  var self = this;
+
+  $('#committees').empty();
+  $('#committee-members').empty();
+
+  var header = '<h3>Member '+name+' Committees</h3>';
+  $('#committees').append(header);
+
+  var committees = this.committees[ name.replace(/ /g, '') ].committees;
+  $.each(committees, function(i, committee) {
+    var cmte = '<div class="committee" title="'+committee.name+'">'+committee.name+' ('+committee.chamber+')</div>';
+    $('#committees').append(cmte);
+  });
+
+  //bind committee hovers
+  $('.committee').on('mouseenter', function(e) {
+    var id = $(this).attr('title');
+    self._showCommitteeMembers( id );
+  });
+} 
+
+
+/*
+* Show MEMBERS OF a committee
+*
+*/ 
+App.prototype._showCommitteeMembers = function(name) {
+  var self = this;
+  var committees = this.allCommittees.results;
+
+  $.each(committees, function(i, committee) {
+    if (committee.name === name) {
+      if ( committee.members.length > 0 ) {
+        
+        $('#committee-members').empty();
+        var header = '<h3>Members of the '+name+'</h3>';
+        $('#committee-members').append(header);
+
+        $.each(committee.members, function(i, rep) {
+          var face = '<img src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
+          $('#committee-members').append( face );
+        });
+
+      }
+    }
+  });
+
+} 
+
+
+
 

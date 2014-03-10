@@ -1,19 +1,36 @@
 body {
   padding-top: 50px;
   background-color:#444;
+  margin:0;
+  padding:0;
+  font: 17px/28px Georgia;
+  font-family: Lato, 'Helvetica Neue';
+  -webkit-font-smoothing: antialiased;
 }
 
 /*
 * Navigation
 *
 */
-.form-group {
-  margin-right: 20px;
-}
 .form-group input {
-  min-width:300px;
+  width:100%;
 }
 
+#nprogress {
+  position: absolute;
+  top: 100px;
+  z-index: 10000;
+}
+
+#header {
+  width:100%;
+  text-align: center;
+}
+
+#header-search {
+  margin:auto;
+  max-width: 500px;
+}
 
 /*
 * Map
@@ -34,21 +51,54 @@ body {
 #legislators {
   position:absolute;
   bottom:0px;
-  height:100px;
+  height:85px;
   width:100%;
   pointer-events:none;
 }
 
+#legislators .container {
+  max-width: 830px;
+}
+
 .legislator {
-  background: #f8f8f8;
-  height:100px;
-  margin-right: 2px;
-  margin-left: 2px;
+  height:85px;
   display: none;
+  pointer-events:auto;
+}
+
+.legislator-inner {
+  background: #f8f8f8;
+  height: 85px;
+  padding: 5px;
+  margin-left: -12px;
+  margin-right: -12px;
+  padding-top: 1px;
+}
+
+.legislator h5, .legislator h4 {
+  margin: 0px;
+  margin-left: -15px;
+}
+
+.legislator h5 {
+  margin-top:4px;
+  color:#CCC;
+}
+
+.legislator .media-heading {
+  margin-left:0px;
+  color:#444;
+  margin-top:0px;
+  font-weight: bold;
 }
 
 .legislator .media {
   margin-top:10px;
+}
+
+.media .glyphicon-user{
+  display:none;
+  font-size:30px;
 }
 
 .legislator .media-object {
@@ -59,6 +109,10 @@ body {
 * Typeahead
 *
 */
+.twitter-typeahead {
+  width: 100%;
+}
+
 .tt-dropdown-menu {
   min-width: 255px;
   margin-top: 2px;
@@ -112,4 +166,10 @@ body {
   bottom:0px;
   background-color:#f8f8f8;
   border-top:1px solid #e7e7e7;
+}
+
+#committee-members img {
+  float:left;
+  width:50px;
+  margin:10px;
 }

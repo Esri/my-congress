@@ -14,6 +14,8 @@
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="http://js.arcgis.com/3.8/js/esri/css/esri.css">
     <link href="assets/css/animate.css" rel="stylesheet">
+    <link href="assets/css/nprogress.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700"></link>
     <link href="assets/css/style.css" rel="stylesheet">
 
   </head>
@@ -21,60 +23,83 @@
   <body>
 
     <div class="navbar navbar-fixed-top navbar-default" role="navigation">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">My Congress</a>
+      <div id="header">
+        <h3>United States Congress and Committees</h3>
       </div>
-      <div class="collapse navbar-collapse">
-        <ul class="nav navbar-nav">
-          
-        </ul>
-        <form class="navbar-form navbar-right" role="search">
+      <div id="header-search">
+        <form role="search">
           <div class="form-group">
-            <input type="text" class="form-control" id="search-reps" placeholder="Search Representatives">
+            <input type="text" class="form-control" id="search-reps" placeholder="Find Your Representative(s) by Name or Zipcode">
           </div>
         </form>
-      </div><!--/.nav-collapse -->
+      </div>
     </div>
 
     <div id="map-container">
       <div id="map"></div>
       <div id="legislators">
-        <div class="animated bounceInUp legislator col-md-3">
-          <div class="media">
-            <a class="pull-left" href="#">
-              <img class="media-object" src="" alt="">
-            </a>
-            <div class="media-body">
-              <h5 class="media-heading"></h5>
-              ...
+        <div class="container">
+          <div class="animated bounceInUp legislator col-md-4">
+            <div class="legislator-inner">
+              <div class="media">
+                <span class="pull-left">
+                  <img class="media-object" src="" alt="">
+                  <span class="glyphicon glyphicon-user"></span>
+                </span>
+                <div class="media-body">
+                  <h5 class="media-heading"></h5>
+                  <div class="col-md-6 state">
+                    <h5 class="state-title">State</h5>
+                    <h4 class="state-name"></h4>
+                  </div>
+                  <div class="col-md-6 rank">
+                    <h5 class="rank-title">State Rank</h5>
+                    <h4 class="rank-name"></h4>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="animated bounceInUp legislator col-md-3">
-          <div class="media">
-            <a class="pull-left" href="#">
-              <img class="media-object" src="" alt="">
-            </a>
-            <div class="media-body">
-              <h5 class="media-heading"></h5>
-              ...
+          <div class="animated bounceInUp legislator col-md-4">
+            <div class="legislator-inner">
+              <div class="media">
+                <span class="pull-left">
+                  <img class="media-object" src="" alt="">
+                  <span class="glyphicon glyphicon-user"></span>
+                </span>
+                <div class="media-body">
+                  <h5 class="media-heading"></h5>
+                  <div class="col-md-6 state">
+                    <h5 class="state-title">State</h5>
+                    <h4 class="state-name"></h4>
+                  </div>
+                  <div class="col-md-6 rank">
+                    <h5 class="rank-title">State Rank</h5>
+                    <h4 class="rank-name"></h4>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="animated bounceInUp legislator col-md-3">
-          <div class="media">
-            <a class="pull-left" href="#">
-              <img class="media-object" src="" alt="">
-            </a>
-            <div class="media-body">
-              <h5 class="media-heading"></h5>
-              ...
+          <div class="animated bounceInUp legislator col-md-4">
+            <div class="legislator-inner">
+              <div class="media">
+                <span class="pull-left">
+                  <img class="media-object" src="" alt="">
+                  <span class="glyphicon glyphicon-user"></span>
+                </span>
+                <div class="media-body">
+                  <h5 class="media-heading"></h5>
+                  <div class="col-md-6 state">
+                    <h5 class="state-title">State</h5>
+                    <h4 class="state-name"></h4>
+                  </div>
+                  <div class="col-md-6 rank">
+                    <h5 class="rank-title">State Rank</h5>
+                    <h4 class="rank-name"></h4>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -83,7 +108,13 @@
 
     <div id="footer">
       <div class="container">
-        
+        <div class="col-md-6 col-sm-6">
+          <div id="committees">
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-6">
+          <div id="committee-members"></div>
+        </div>
       </div>
     </div>
 
@@ -91,6 +122,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="assets/js/nprogress.js"></script>
     <script src="http://js.arcgis.com/3.8/"></script>
     <script src="assets/js/typeahead.min.js"></script>
     <script src="assets/js/application.js"></script>
