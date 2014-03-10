@@ -10,8 +10,9 @@ var App = function(){
 App.prototype.initMap = function() {
   var self = this;
 
-  require(["esri/map", "esri/layers/ArcGISTiledMapServiceLayer", "esri/layers/FeatureLayer", "esri/renderers/SimpleRenderer"], 
-    function(Map, ArcGISTiledMapServiceLayer, FeatureLayer, SimpleRenderer) { 
+  require(["esri/map", "esri/layers/ArcGISTiledMapServiceLayer", 
+    "esri/layers/FeatureLayer"], 
+    function(Map, ArcGISTiledMapServiceLayer, FeatureLayer) { 
 
     // hook up elevation slider events
     esriConfig.defaults.map.basemaps.dotted = {
@@ -34,37 +35,15 @@ App.prototype.initMap = function() {
     //  opacity: 0.8
     //});
     //var url = "http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer";
-    var featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
+    self.featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
       mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
       outFields: ["*"]
     });
 
-    var simpleJson = {
-      "type": "simple",
-      "label": "",
-      "description": "",
-      "symbol": {
-        "color": [210,105,30,191],
-        "size": 6,
-        "angle": 0,
-        "xoffset": 0,
-        "yoffset": 0,
-        "type": "esriSMS",
-        "style": "esriSMSCircle",
-        "outline": {
-          "color": [255,255,255,255],
-          "width": 1,
-          "type": "esriSLS",
-          "style": "esriSLSSolid"
-        }
-      }
-    }
 
-    console.log('fa', featureLayer);
-    var rend = new SimpleRenderer(simpleJson);
-    //featureLayer.setRenderer( rend );
-
-    self.map.addLayer(featureLayer);
+    console.log('fa', self.featureLayer);
+    
+    self.map.addLayer(self.featureLayer);
 
     self._wire();
     self._getAllLegNames();
@@ -139,9 +118,13 @@ App.prototype._getAllLegNames = function() {
 
   //sunlight api lookup
   this.legislators = [];
+  this.theme = {};
   $.getJSON(url, function(data) {
     
     $.each(data.results, function(i, rep) {
+      if ( rep.district ) {
+        self.theme[ rep.district ] = rep.party;
+      }
       self.legislators.push(rep.first_name + ' ' + rep.last_name);
     });
 
@@ -150,10 +133,41 @@ App.prototype._getAllLegNames = function() {
       local: self.legislators
     });
 
+    self._styleMap();
   });
 
 }
 
+
+App.prototype._styleMap = function() {
+  var self = this;
+
+  var breaks = self.theme;
+  require(["esri/renderers/SimpleRenderer",
+    "esri/renderers/ClassBreaksRenderer", "esri/symbols/SimpleFillSymbol",
+    "dojo/_base/Color", "dojo/dom-style"], 
+    function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle) { 
+
+    console.log('grpahics', self.featureLayer.graphics);
+    $.each(self.featureLayer.graphics, function(i, graphic) {
+      console.log('info', graphic);
+
+    });
+    var symbol = new SimpleFillSymbol();
+    symbol.setColor(new Color([150, 150, 150, 0.5]));
+
+    var renderer = new ClassBreaksRenderer(symbol, "DISTRICT");
+    renderer.addBreak(0, 25, new SimpleFillSymbol().setColor(new Color([56, 168, 0, 0.5])));
+    renderer.addBreak(25, 75, new SimpleFillSymbol().setColor(new Color([139, 209, 0, 0.5])));
+    renderer.addBreak(75, 175, new SimpleFillSymbol().setColor(new Color([255, 255, 0, 0.5])));
+    renderer.addBreak(175, 400, new SimpleFillSymbol().setColor(new Color([255, 128, 0, 0.5])));
+    renderer.addBreak(400, Infinity, new SimpleFillSymbol().setColor(new Color([255, 0, 0, 0.5])));
+
+    self.featureLayer.setRenderer(renderer);
+
+  });
+
+}
 
 /*
 * Get ALL committees
@@ -283,6 +297,8 @@ App.prototype._getLegByZipcode = function(zipcode) {
 
   
 };
+
+
 
 /*
 * Get committees
