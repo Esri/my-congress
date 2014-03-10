@@ -10,7 +10,8 @@ var App = function(){
 App.prototype.initMap = function() {
   var self = this;
 
-  require(["esri/map", "esri/layers/ArcGISTiledMapServiceLayer"], function(Map, ArcGISTiledMapServiceLayer) { 
+  require(["esri/map", "esri/layers/ArcGISTiledMapServiceLayer", "esri/layers/FeatureLayer", "esri/renderers/SimpleRenderer"], 
+    function(Map, ArcGISTiledMapServiceLayer, FeatureLayer, SimpleRenderer) { 
 
     // hook up elevation slider events
     esriConfig.defaults.map.basemaps.dotted = {
@@ -28,20 +29,42 @@ App.prototype.initMap = function() {
     });
 
     //add districts
-    var districtsUrl = "http://dcdev.esri.com/arcgis/rest/services/Congress/DistrictsByParty/MapServer";
-    var districtsLayer = new ArcGISTiledMapServiceLayer(districtsUrl, {
-      opacity: 0.8
+    //var districtsUrl = "http://dcdev.esri.com/arcgis/rest/services/Congress/DistrictsByParty/MapServer";
+    //var districtsLayer = new ArcGISTiledMapServiceLayer(districtsUrl, {
+    //  opacity: 0.8
+    //});
+    //var url = "http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer";
+    var featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
+      mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+      outFields: ["*"]
     });
-    self.map.addLayer(districtsLayer);
 
-    //bind map resize
-    $(window).on('resize', function() {
-      self.map.resize();
-      
-      var height = $(window).height() - 200;
-      $('#map').css('height', height+'px');
+    var simpleJson = {
+      "type": "simple",
+      "label": "",
+      "description": "",
+      "symbol": {
+        "color": [210,105,30,191],
+        "size": 6,
+        "angle": 0,
+        "xoffset": 0,
+        "yoffset": 0,
+        "type": "esriSMS",
+        "style": "esriSMSCircle",
+        "outline": {
+          "color": [255,255,255,255],
+          "width": 1,
+          "type": "esriSLS",
+          "style": "esriSLSSolid"
+        }
+      }
+    }
 
-    });
+    console.log('fa', featureLayer);
+    var rend = new SimpleRenderer(simpleJson);
+    //featureLayer.setRenderer( rend );
+
+    self.map.addLayer(featureLayer);
 
     self._wire();
     self._getAllLegNames();
@@ -59,6 +82,15 @@ App.prototype.initMap = function() {
 */ 
 App.prototype._wire = function() {
   var self = this;
+
+  //bind map resize
+  $(window).on('resize', function() {
+    self.map.resize();
+    
+    var height = $(window).height() - 200;
+    $('#map').css('height', height+'px');
+
+  });
 
   //map events
   this.map.on('click', function(e) {
@@ -205,11 +237,12 @@ App.prototype._getLegByName = function(name) {
     $.each(data.results, function(i, rep) {
       if ( rep.last_name === last_name ) {
         self._getCommittees(rep);
+        console.log('rep', rep);
         $('.legislator').hide();
         $($('.legislator')[ 0 ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
         $($('.legislator')[ 0 ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
         $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
-        $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "unknown" );
+        $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "" );
         $($('.legislator')[ 0 ]).show();
       }
 
@@ -334,7 +367,7 @@ App.prototype._showCommitteeMembers = function(name) {
       if ( committee.members.length > 0 ) {
         
         $('#committee-members').empty();
-        var header = '<h3>Members of the '+name+'</h3>';
+        var header = '<h3>Members of the '+name+' Committee</h3>';
         $('#committee-members').append(header);
 
         $.each(committee.members, function(i, rep) {
