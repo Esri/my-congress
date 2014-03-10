@@ -175,6 +175,18 @@ body {
   padding: 30px;
 }
 
+.committee {
+  cursor: pointer;
+}
+
+.committee.selected {
+  background: #EEE;  
+}
+
+.committee:hover {
+  background:#EEE;
+}
+
 #committee-members img {
   float:left;
   width:50px;
