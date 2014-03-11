@@ -48,6 +48,14 @@ body {
   cursor:pointer;
 }
 
+.map .container {
+  cursor:pointer !important;
+}
+
+#map_graphics_layer {
+  pointer-events:none;
+}
+
 #legislators {
   position:absolute;
   bottom:0px;

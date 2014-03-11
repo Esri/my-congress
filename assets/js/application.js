@@ -40,9 +40,6 @@ App.prototype.initMap = function() {
       outFields: ["*"]
     });
 
-
-    console.log('fa', self.featureLayer);
-    
     self.map.addLayer(self.featureLayer);
     self.featureLayer.on('update-end', function(obj) {
       self._styleMap();
@@ -79,8 +76,17 @@ App.prototype._wire = function() {
     self._getLegByLatLong(e);
   });
 
-  this.map.on('hover', function(e) {
-    //self._getDistrict(e);
+  self.featureLayer.on('mouse-over', function(e) {
+    self._featureSelected( e.graphic, 'mouse-over' );
+  });
+
+  self.featureLayer.on('mouse-out', function(e) {
+    self._removeSelectedFeature( 'mouse-over' );
+  });
+
+  //layer EVENTS
+  self.featureLayer.on('click', function(e) {
+    self._featureSelected( e.graphic, 'click' );
   });
 
   //typeahead search
@@ -108,6 +114,77 @@ App.prototype._wire = function() {
   $( document ).ajaxStop(function() {
     NProgress.done();
   });
+}
+
+
+/*
+* Select polygons
+*
+*/
+App.prototype._featureSelected = function(graphicJson, type) {
+  //remove previously selected graphic 
+  this._removeSelectedFeature(type);
+
+  //add selected graphic
+  var id = ( type === "mouse-over" ) ? "hoverGraphic" : "selectedGraphic";
+  
+  var graphic = {};
+  graphic.geometry = graphicJson.geometry;
+  graphic.symbol = {};
+  graphic.attributes = { id: id }
+
+
+  graphic.symbol = {
+    "color":[255,255,255,64],"outline":{"color":[255,255,255,255],
+    "width":2,"type":"esriSLS","style":"esriSLSSolid"},
+    "type":"esriSFS","style":"esriSFSSolid"
+  };
+
+
+  var g = new esri.Graphic( graphic );
+  
+  //add to map
+  this.map.graphics.add( g );
+}
+
+
+App.prototype._selectDistrict = function(district, state) {
+  var self = this;
+  var g;
+  $.each(this.featureLayer.graphics, function(i, graphic) {
+    if ( parseInt(graphic.attributes.DISTRICT) === district && graphic.attributes.STATENAME === state ) {
+      g = graphic;
+    }
+  });
+  this._featureSelected(g, 'click');
+
+}
+
+/*
+* Remove selected polygon
+*
+*/
+App.prototype._removeSelectedFeature = function(type) {
+  var self = this;
+
+  if ( type === "mouse-over" ) {
+    $.each(this.map.graphics.graphics, function(index,gra){
+      if (gra) {
+        if(gra.attributes && gra.attributes.id === "hoverGraphic"){
+          self.map.graphics.remove( gra );
+        }
+      }
+    });
+  } else {
+    $.each(this.map.graphics.graphics, function(index,gra){
+      if (gra) {
+        if(gra.attributes && gra.attributes.id === "selectedGraphic"){
+          self.map.graphics.remove( gra );
+        }
+      }
+    });
+  }
+
 }
 
 
@@ -141,6 +218,11 @@ App.prototype._getAllLegNames = function() {
 }
 
 
+/*
+* Classbreaks styling of main feature layer
+*
+*
+*/
 App.prototype._styleMap = function() {
   var self = this;
 
@@ -167,6 +249,9 @@ App.prototype._styleMap = function() {
 
     self.featureLayer.setRenderer(renderer);
     self.featureLayer.redraw();
+
+    console.log('restyle feature layer!')
+    //self.map.featureLayer.enableMouseEvents();
   });
 
 }
@@ -180,7 +265,6 @@ App.prototype._getAllCommittees = function() {
 
   var url = "https://congress.api.sunlightfoundation.com/committees?per_page=all&fields=members,name&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
   $.getJSON(url, function(data) {
-    console.log('data', data)
     self.allCommittees = data;
   });
 }
@@ -199,24 +283,33 @@ App.prototype._getLegByLatLong = function(e) {
 
   var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude="+lat+"&longitude="+lon+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
+  $('.legislator').hide(); //hide previous selection
+
   //sunlight api lookup
   $.getJSON(url, function(data) {
     
     self.committees = {}; //reset committees array
-    $('.legislator').hide(); //hide previous selection
     $('.media-object').show(); //make sure all images are viz
     $('.glyphicon-user').hide();
 
     $.each(data.results, function(i, rep) {
-      console.log('rep', rep);
+
+      //highlight map
+      if ( rep.district ) { 
+        self._selectDistrict( rep.district, rep.state_name ); 
+      }
+
+      //set current committees
       self._getCommittees(rep);
-      //<span class="glyphicon glyphicon-user"></span>
+
+      //update UI
       $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
       $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
       $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
       $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "" );
       $($('.legislator')[ i ]).show();
 
+      //show icon for missing rep photos
       $("img").error(function () {
         $(this).parent().parent().find('.glyphicon-user').show();
         $(this).unbind("error").hide(); //attr("src", "broken.gif");
@@ -253,7 +346,12 @@ App.prototype._getLegByName = function(name) {
     $.each(data.results, function(i, rep) {
       if ( rep.last_name === last_name ) {
         self._getCommittees(rep);
-        console.log('rep', rep);
+        
+        //highlight map
+        if ( rep.district ) { 
+          self._selectDistrict( rep.district, rep.state_name ); 
+        }
+
         $('.legislator').hide();
         $($('.legislator')[ 0 ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
         $($('.legislator')[ 0 ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
@@ -289,12 +387,21 @@ App.prototype._getLegByZipcode = function(zipcode) {
     $('.legislator').hide(); //hide previous selection
 
     $.each(data.results, function(i, rep) {
+
+      //highlight map
+      if ( rep.district ) { 
+        self._selectDistrict( rep.district, rep.state_name ); 
+      }
+
+      //set current committees
       self._getCommittees(rep);
+
       $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
       $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
       $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
       $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "" );
       $($('.legislator')[ i ]).show();
+
     });
 
   });
