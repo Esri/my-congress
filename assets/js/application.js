@@ -232,7 +232,7 @@ App.prototype._styleMap = function() {
     "dojo/_base/Color", "dojo/dom-style"], 
     function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle) { 
 
-    //console.log('grpahics', app.featureLayer.graphics.length);
+    //console.log('grpahics', app.featureLayer.graphics.length);  
     $.each(self.featureLayer.graphics, function(i, graphic) {
       //console.log('info', graphic);
 
