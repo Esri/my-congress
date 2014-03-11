@@ -36,7 +36,7 @@ App.prototype.initMap = function() {
     //});
     //var url = "http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer";
     self.featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
-      mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+      mode: esri.layers.FeatureLayer.SNAPSHOT,
       outFields: ["*"]
     });
 
@@ -44,6 +44,9 @@ App.prototype.initMap = function() {
     console.log('fa', self.featureLayer);
     
     self.map.addLayer(self.featureLayer);
+    self.featureLayer.on('update-end', function(obj) {
+      self._styleMap();
+    });
 
     self._wire();
     self._getAllLegNames();
@@ -133,7 +136,6 @@ App.prototype._getAllLegNames = function() {
       local: self.legislators
     });
 
-    self._styleMap();
   });
 
 }
@@ -148,9 +150,9 @@ App.prototype._styleMap = function() {
     "dojo/_base/Color", "dojo/dom-style"], 
     function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle) { 
 
-    console.log('grpahics', self.featureLayer.graphics);
+    //console.log('grpahics', app.featureLayer.graphics.length);
     $.each(self.featureLayer.graphics, function(i, graphic) {
-      console.log('info', graphic);
+      //console.log('info', graphic);
 
     });
     var symbol = new SimpleFillSymbol();
@@ -164,7 +166,7 @@ App.prototype._styleMap = function() {
     renderer.addBreak(400, Infinity, new SimpleFillSymbol().setColor(new Color([255, 0, 0, 0.5])));
 
     self.featureLayer.setRenderer(renderer);
-
+    self.featureLayer.redraw();
   });
 
 }
