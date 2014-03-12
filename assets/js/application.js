@@ -35,8 +35,8 @@ App.prototype.initMap = function() {
     //  opacity: 0.8
     //});
     //var url = "http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer";
-    self.featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
-      mode: esri.layers.FeatureLayer.SNAPSHOT,
+    //self.featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
+    self.featureLayer = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/1",{
       outFields: ["*"]
     });
 
@@ -122,9 +122,11 @@ App.prototype._wire = function() {
 *
 */
 App.prototype._featureSelected = function(graphicJson, type) {
+
+  if (!graphicJson) return;
+
   //remove previously selected graphic 
   this._removeSelectedFeature(type);
-
   //add selected graphic
   var id = ( type === "mouse-over" ) ? "hoverGraphic" : "selectedGraphic";
   
@@ -136,7 +138,7 @@ App.prototype._featureSelected = function(graphicJson, type) {
 
   graphic.symbol = {
     "color":[255,255,255,64],"outline":{"color":[255,255,255,255],
-    "width":2,"type":"esriSLS","style":"esriSLSSolid"},
+    "width":0.8,"type":"esriSLS","style":"esriSLSSolid"},
     "type":"esriSFS","style":"esriSFSSolid"
   };
 
@@ -229,29 +231,61 @@ App.prototype._styleMap = function() {
   var breaks = self.theme;
   require(["esri/renderers/SimpleRenderer",
     "esri/renderers/ClassBreaksRenderer", "esri/symbols/SimpleFillSymbol",
-    "dojo/_base/Color", "dojo/dom-style"], 
-    function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle) { 
+    "dojo/_base/Color", "dojo/dom-style", "esri/renderers/UniqueValueRenderer", "esri/symbols/SimpleLineSymbol"], 
+    function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle, UniqueValueRenderer, SimpleLineSymbol) { 
 
     //console.log('grpahics', app.featureLayer.graphics.length);  
     $.each(self.featureLayer.graphics, function(i, graphic) {
-      //console.log('info', graphic);
+      if ( graphic.attributes.PARTY === "Republican" ) {
+        
+        if ( graphic.attributes.SQMI < 5000 ) {
+          graphic.attributes[ "schema" ] = "r0";
+        } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
+          graphic.attributes[ "schema" ] = "r1";
+        } else {
+          graphic.attributes[ "schema" ] = "r2";
+        }
+        
+      } else {
 
+        if ( graphic.attributes.SQMI < 5000 ) {
+          graphic.attributes[ "schema" ] = "d0";
+        } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
+          graphic.attributes[ "schema" ] = "d1";
+        } else {
+          graphic.attributes[ "schema" ] = "d2";
+        }
+
+      }
     });
-    var symbol = new SimpleFillSymbol();
-    symbol.setColor(new Color([150, 150, 150, 0.5]));
 
-    var renderer = new ClassBreaksRenderer(symbol, "DISTRICT");
-    renderer.addBreak(0, 25, new SimpleFillSymbol().setColor(new Color([56, 168, 0, 0.5])));
-    renderer.addBreak(25, 75, new SimpleFillSymbol().setColor(new Color([139, 209, 0, 0.5])));
-    renderer.addBreak(75, 175, new SimpleFillSymbol().setColor(new Color([255, 255, 0, 0.5])));
-    renderer.addBreak(175, 400, new SimpleFillSymbol().setColor(new Color([255, 128, 0, 0.5])));
-    renderer.addBreak(400, Infinity, new SimpleFillSymbol().setColor(new Color([255, 0, 0, 0.5])));
+    var defaultSymbol = new SimpleFillSymbol();
+      defaultSymbol.outline.setStyle(SimpleLineSymbol.STYLE_DASH, new Color([255,255,255,255]), 3);
 
-    self.featureLayer.setRenderer(renderer);
+    var renderer = new UniqueValueRenderer(defaultSymbol, "schema");
+    renderer.addValue("d0", new SimpleFillSymbol().setColor(new Color([222,235,247, 0.7])));
+    renderer.addValue("d1", new SimpleFillSymbol().setColor(new Color([158,202,225, 0.7])));
+    renderer.addValue("d2", new SimpleFillSymbol().setColor(new Color([49,130,189, 0.7])));
+    
+    renderer.addValue("r0", new SimpleFillSymbol().setColor(new Color([254,224,210, 0.7])));
+    renderer.addValue("r1", new SimpleFillSymbol().setColor(new Color([252,146,114, 0.7])));
+    renderer.addValue("r2", new SimpleFillSymbol().setColor(new Color([222,45,38, 0.7])));
+
+    var json = renderer.toJson();
+    $.each(json.uniqueValueInfos, function(i,sys) {
+      sys.symbol.outline = {
+        color: [225,225,225,255],
+        style:"esriSLSSolid",
+        width:0.3,
+        type:"esriSLS"
+      }
+    });
+
+    var rend = new UniqueValueRenderer(json);
+    self.featureLayer.setRenderer( rend );
     self.featureLayer.redraw();
 
     console.log('restyle feature layer!')
-    //self.map.featureLayer.enableMouseEvents();
   });
 
 }
