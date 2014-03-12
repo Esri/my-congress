@@ -18,6 +18,16 @@
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:100,300,400,700"></link>
     <link href="assets/css/style.css" rel="stylesheet">
 
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-48946900-1', 'arcgis.github.io');
+      ga('send', 'pageview');
+
+    </script>
   </head>
 
   <body>
@@ -109,15 +119,59 @@
     <div id="footer">
       <div class="container">
         <div class="col-md-6 col-sm-6">
-          <div id="committees">
+          <div class="row">
+            <div class="col-md-12"><h3 id="member-name"></h3></div>
+          </div>
+          <div id="member-details">
+            <div class="row">
+              <div class="col-md-6">
+                <h5 class="gray-title">Member's Washington Address</h5>
+                <h6 id="address"></h6>
+              </div>
+              <div class="col-md-6" id="contact">
+                <h5 class="gray-title">Contact Informaion</h5>
+                <div class="col-md-6"><h6 id="telephone"></h6></div>
+                <div class="col-md-6"><h6 id="online-contact"></h6></div>
+              </div>
+            </div>
+            <div class="break"></div>
+            <div class="loader voting-loader"></div>
+            <div class="loader-help voting-loader">Crunching the numbers...</div>
+            <div class="row" id="voting-record">
+              <div class="col-md-3">
+                <h4 class="gray-title">Total Votes</h4>
+                <h3 id="total-votes"></h3>
+              </div>
+              <div class="col-md-9" id="last-50">
+                <h4 class="gray-title">Last 50 Votes</h4>
+                <div class="col-md-3">
+                  <h5>Yea</h5>
+                  <h6 id="last-50-yea">0</h6>
+                </div>
+                <div class="col-md-3">
+                  <h5>Nay</h5>
+                  <h6 id="last-50-nay">0</h6>
+                </div>
+                <div class="col-md-3">
+                  <h5>Present</h5>
+                  <h6 id="last-50-present">0</h6>
+                </div>
+                <div class="col-md-3">
+                  <h5>Not Voting</h5>
+                  <h6 id="last-50-not-voting">0</h6>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="col-md-6 col-sm-6">
+          <div id="committees"></div>
           <div id="committee-members"></div>
         </div>
       </div>
       <div id="footer-about">
-        About this Project
+        <div id="congress-seal"></div>
+        <span>About this Project</span>
       </div>
     </div>
 

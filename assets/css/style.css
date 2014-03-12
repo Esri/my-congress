@@ -8,6 +8,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+.break {
+  width:100%;
+  height:15px;
+  overflow: hidden;
+}
+
 /*
 * Navigation
 *
@@ -72,6 +78,7 @@ body {
   height:85px;
   display: none;
   pointer-events:auto;
+  z-index: 1000;
 }
 
 .legislator-inner {
@@ -81,7 +88,16 @@ body {
   margin-left: -12px;
   margin-right: -12px;
   padding-top: 1px;
+  border:1px solid #f8f8f8;
+  border-bottom: none;
 }
+
+.legislator-inner:hover {
+  cursor: pointer;
+  border:1px solid #444;
+  border-bottom: none;
+}
+
 
 .legislator h5, .legislator h4 {
   margin: 0px;
@@ -176,11 +192,57 @@ body {
   border-top:1px solid #e7e7e7;
 }
 
+#congress-seal {
+  background: url('../images/us-congress-seal.svg') no-repeat;
+  width: 50px;
+  height: 50px;
+  background-size: 50px 50px;
+  position: absolute;
+  margin-left: 45%;
+  top: -25px;
+  box-shadow: 0px 0px 16px 10px #eee;
+  border-radius: 100px;
+}
+
 #footer-about {
   text-align: center;
-  width:100%;
-  height:100px;
+  height: 100px;
   padding: 30px;
+  border-top: 1px solid #C9C9C9;
+  padding-top: 50px;
+  position: relative;
+  margin: auto;
+  width: 90%;
+  margin-top: 50px;
+}
+
+#member-details {
+  display:none;
+}
+
+#contact .col-md-6 {
+  padding-left:0px;
+}
+
+#member-details h5 {
+  margin-top:4px;
+  color:#AAA;
+}
+
+#telephone {
+  border-right:1px solid #777;
+}
+
+#online-contact, #telephone {
+  margin:0px;
+}
+
+#last-50 .col-md-3 {
+  padding-left:0px;
+}
+
+#voting-record {
+  display:none;
 }
 
 .committee {
@@ -199,4 +261,107 @@ body {
   float:left;
   width:50px;
   margin:10px;
+}
+
+
+/* LOADER */
+
+.voting-loader {
+  margin-top:100px !important; 
+}
+
+.loader-help {
+  width:100%;
+  height:20px;
+  text-align: center;
+  color:#CCC;
+  margin-top:5px !important;
+}
+
+@-webkit-keyframes expand {
+  0% {
+    -webkit-transform: scale(0);
+  }
+
+  50% {
+    -webkit-transform: scale(1);
+  }
+
+  100% {
+    z-index: 1;
+  }
+}
+@-moz-keyframes expand {
+  0% {
+    -moz-transform: scale(0);
+  }
+
+  50% {
+    -moz-transform: scale(1);
+  }
+
+  100% {
+    z-index: 1;
+  }
+}
+@-o-keyframes expand {
+  0% {
+    -o-transform: scale(0);
+  }
+
+  50% {
+    -o-transform: scale(1);
+  }
+
+  100% {
+    z-index: 1;
+  }
+}
+@keyframes expand {
+  0% {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1);
+  }
+
+  100% {
+    z-index: 1;
+  }
+}
+.loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -20px 0 0 -20px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6.66667px #141414;
+  width: 40px;
+  height: 40px;
+}
+.loader:before, .loader:after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  margin: -21px 0 0 -21px;
+  border-radius: 50%;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+}
+.loader:before {
+  background-color: #141414;
+  -webkit-animation: expand 1.6s linear infinite both;
+  -moz-animation: expand 1.6s linear infinite both;
+  animation: expand 1.6s linear infinite both;
+}
+.loader:after {
+  background-color: white;
+  -webkit-animation: expand 1.6s linear 0.8s infinite both;
+  -moz-animation: expand 1.6s linear 0.8s infinite both;
+  animation: expand 1.6s linear 0.8s infinite both;
 }

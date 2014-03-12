@@ -15,12 +15,21 @@ App.prototype.initMap = function() {
     function(Map, ArcGISTiledMapServiceLayer, FeatureLayer) { 
 
     // hook up elevation slider events
+    
     esriConfig.defaults.map.basemaps.dotted = {
       baseMapLayers: [
         { url: "http://studio.esri.com/arcgis/rest/services/World/WorldBasemapBlack/MapServer" }
       ],
       title: "Dots"
     };
+    /*
+    esriConfig.defaults.map.basemaps.darkgray = {
+      baseMapLayers: [
+        { url: "http://tiles4.arcgis.com/tiles/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Dark_Gray_Base_Beta/MapServer" }
+      ],
+      title: "Dark Gray"
+    };
+    */
 
     self.map = new Map("map", {
       center: [-92.049, 41.485],
@@ -102,8 +111,9 @@ App.prototype._wire = function() {
   });
 
   //bind legislator name click for GET committees
-  $('.legislator').on('click mouseenter', function(e) {
+  $('.legislator').on('click', function(e) {
     var name = $(this).find('.media-heading').html();
+    self._showMemberDetails(name);
     self._showCommittees(name.split('.')[1]);
   });
 
@@ -201,9 +211,14 @@ App.prototype._getAllLegNames = function() {
 
   //sunlight api lookup
   this.legislators = [];
+  this.allLegislators = [];
   this.theme = {};
   $.getJSON(url, function(data) {
-    
+
+    //save array of all leg for later use
+    self.allLegislators = data.results;
+
+    //save just names for 'typeahead'
     $.each(data.results, function(i, rep) {
       if ( rep.district ) {
         self.theme[ rep.district ] = rep.party;
@@ -546,5 +561,59 @@ App.prototype._showCommitteeMembers = function(name) {
 } 
 
 
+/*
+* Member details
+*
+*
+*/
+App.prototype._showMemberDetails = function(name) {
+  var self = this;
 
+  $('#member-name').html(name);
+
+  $.each(this.allLegislators, function(i, leg) {
+    var n = name.split('.')[1].split(' ');
+    if ( leg.first_name === n[1] && leg.last_name === n[2]) {
+      $('#member-details').fadeIn();
+      $('#address').html(leg.office);
+      $('#telephone').html(leg.phone);
+      $('#online-contact').html("<a href="+leg.contact_form+">Online Contact</a>");
+      self._getVotesById(leg.bioguide_id);
+    }
+  });
+
+}
+
+
+App.prototype._getVotesById = function(id) {
+  var self = this;
+
+  $('#voting-record').fadeOut();
+  $('.voting-loader').show();
+
+  //get vote history for selected member
+  //var url = "https://congress.api.sunlightfoundation.com/votes?voter_ids."+id+"__exists=true&fields=roll_id,voted_at,vote,result,breakdown.total&order=voted_at&per_page=100&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,breakdown.total"
+  
+  var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0}
+  $.getJSON(url, function(data) {
+    console.log('data', data);
+    
+    $.each(data.results, function(i, res) {
+      for ( var voter in res.voters ) {
+        if ( voter === id ) {
+          votes[ res.voters[ voter ].vote ]++;
+        }
+      };
+    });
+    $('.voting-loader').hide();
+    $('#voting-record').fadeIn();
+    $('#total-votes').html(data.count.toLocaleString());
+    $('#last-50-yea').html(votes.Yea);
+    $('#last-50-nay').html(votes.Nay);
+    $('#last-50-present').html(votes.Present);
+    $('#last-50-not-voting').html(votes["Not Voting"]);
+  });
+
+}
 
