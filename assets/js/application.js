@@ -87,10 +87,12 @@ App.prototype._wire = function() {
 
   self.featureLayer.on('mouse-over', function(e) {
     self._featureSelected( e.graphic, 'mouse-over' );
+    self._showHoverWindow(e);
   });
 
   self.featureLayer.on('mouse-out', function(e) {
     self._removeSelectedFeature( 'mouse-over' );
+    $('#hoverinfo').hide();
   });
 
   //layer EVENTS
@@ -137,6 +139,13 @@ App.prototype._featureSelected = function(graphicJson, type) {
 
   //remove previously selected graphic 
   this._removeSelectedFeature(type);
+
+  //set selected graphic on the app
+  if ( type === "click" ) {
+    this.selectedGraphic = graphicJson;
+    this._setMapExtent();
+  }
+
   //add selected graphic
   var id = ( type === "mouse-over" ) ? "hoverGraphic" : "selectedGraphic";
   
@@ -168,7 +177,6 @@ App.prototype._selectDistrict = function(district, state) {
       g = graphic;
     }
   });
-  console.log('g', g);
   this._featureSelected(g, 'click');
 
 }
@@ -200,6 +208,12 @@ App.prototype._removeSelectedFeature = function(type) {
 
 }
 
+
+App.prototype._showHoverWindow = function(e) {
+  var self = this;
+  $('#hoverinfo').show().css({left:e.clientX+10+'px', top:e.clientY+10+'px'});
+  $('#hoverinfo').html('<div>State: '+e.graphic.attributes.STATE_ABBR+'</div><div>District: '+e.graphic.attributes.CD113FIPS+'<div>');
+}
 
 /*
 * Get ALL member names
@@ -304,6 +318,17 @@ App.prototype._styleMap = function() {
     console.log('restyle feature layer!')
   });
 
+}
+
+
+/*
+* Set Map Extent
+*
+*/
+App.prototype._setMapExtent = function() {
+  var extent = this.selectedGraphic.geometry.getExtent();
+  console.log('extent', extent);
+  this.map.setExtent(extent.expand(5));
 }
 
 /*
@@ -514,7 +539,7 @@ App.prototype._showCommittees = function(name) {
   $('#committees').empty();
   $('#committee-members').empty();
 
-  var header = '<h3>Member '+name+' Committees</h3>';
+  var header = '<h3>Committees '+name+' is Member of</h3>';
   $('#committees').append(header);
 
   var committees = this.committees[ name.replace(/ /g, '') ].committees;
