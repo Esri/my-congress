@@ -154,10 +154,11 @@ App.prototype._selectDistrict = function(district, state) {
   var self = this;
   var g;
   $.each(this.featureLayer.graphics, function(i, graphic) {
-    if ( parseInt(graphic.attributes.DISTRICT) === district && graphic.attributes.STATENAME === state ) {
+    if ( parseInt(graphic.attributes.CD113FIPS) === district && graphic.attributes.STATE_ABBR === state ) {
       g = graphic;
     }
   });
+  console.log('g', g);
   this._featureSelected(g, 'click');
 
 }
@@ -330,7 +331,7 @@ App.prototype._getLegByLatLong = function(e) {
 
       //highlight map
       if ( rep.district ) { 
-        self._selectDistrict( rep.district, rep.state_name ); 
+        self._selectDistrict( rep.district, rep.state ); 
       }
 
       //set current committees
@@ -383,7 +384,7 @@ App.prototype._getLegByName = function(name) {
         
         //highlight map
         if ( rep.district ) { 
-          self._selectDistrict( rep.district, rep.state_name ); 
+          self._selectDistrict( rep.district, rep.state ); 
         }
 
         $('.legislator').hide();
@@ -424,7 +425,7 @@ App.prototype._getLegByZipcode = function(zipcode) {
 
       //highlight map
       if ( rep.district ) { 
-        self._selectDistrict( rep.district, rep.state_name ); 
+        self._selectDistrict( rep.district, rep.state ); 
       }
 
       //set current committees
