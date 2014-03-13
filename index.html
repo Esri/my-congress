@@ -181,6 +181,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type='application/javascript' src='assets/js/fastclick.js'></script>
     <script src="assets/js/nprogress.js"></script>
     <script src="http://js.arcgis.com/3.8/"></script>
     <script src="assets/js/typeahead.min.js"></script>
@@ -188,7 +189,10 @@
     <script src="assets/js/bootstrap.min.js"></script>
 
     <script>
-
+      window.addEventListener('load', function() {
+        FastClick.attach(document.body);
+      }, false);
+      
       //initialize app on page ready
       $(document).on('ready', function() {
         app = new App({});
