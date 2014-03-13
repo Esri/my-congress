@@ -168,7 +168,7 @@ body {
   margin-left: -12px;
   margin-right: -12px;
   padding-top: 1px;
-  border:1px solid #f8f8f8;
+  border:1px solid #CCC;
   border-bottom: none;
 }
 
@@ -332,12 +332,16 @@ body {
   -webkit-transition: height 1s;
   -moz-transition: height 1s;
   transition: height 1s;
+  margin-top: 20px;
+  /*border-bottom: 1px solid #CCC;*/
+}
 
+#committees h3 {
+  margin-top:0px;
 }
 
 #committee-members {
   display:none;
-  border-top: 1px solid #CCC;
   margin-top: 20px;
 }
 
@@ -373,6 +377,43 @@ body {
 }
 
 
+#bills-container {
+  display: none;
+  overflow: hidden;
+}
+
+#bills {
+  height: 400px;
+  overflow: hidden; 
+  overflow-y:auto;
+}
+
+#bills h5 {
+  color:#444;
+}
+
+.bill {
+  padding-bottom: 5px;
+  border-bottom: 1px dashed #CCC;
+  overflow: hidden;
+  margin-bottom: 10px;
+  font-size: 10pt;
+}
+
+#bill-date {
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.Passed {
+  color:#67a966;
+}
+
+.Failed {
+  color:#d53f27;
+}
+ 
 /* LOADER */
 
 .voting-loader {

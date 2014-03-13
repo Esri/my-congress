@@ -702,7 +702,7 @@ App.prototype._showMemberDetails = function(name) {
       $('#member-details').fadeIn();
       $('#address').html(leg.office);
       $('#telephone').html(leg.phone);
-      $('#online-contact').html("<a href="+leg.contact_form+">Online Contact</a>");
+      $('#online-contact').html("<a href="+leg.contact_form+">Contact</a>");
       self._getVotesById(leg.bioguide_id);
     }
   });
@@ -722,7 +722,7 @@ App.prototype._getVotesById = function(id) {
   $('.voting-loader').show();
 
   //get vote history for selected member
-  var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,breakdown.total"
+  var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total"
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0}
   $.getJSON(url, function(data) {
@@ -731,6 +731,22 @@ App.prototype._getVotesById = function(id) {
     $.each(data.results, function(i, res) {
       for ( var voter in res.voters ) {
         if ( voter === id ) {
+          if (res.bill) {
+            $('#bills-container').show();
+            var item = '<div class="bill"><h4>'+res.bill.bill_id+'</h4>\
+                <h5>'+res.bill.official_title+'</h5>\
+                <div class="col-md-5 col-sm-5 col-xs-4">Result: <span class="'+res.result+'">'+res.result+'</span></div>\
+                <div class="col-md-2 col-sm-2 col-xs-2">Yea: <span>'+res.breakdown.total.Yea+'</span></div>\
+                <div class="col-md-2 col-sm-2 col-xs-2">Nay: <span>'+res.breakdown.total.Nay+'</span></div>\
+                <div class="col-md-3 col-sm-3 col-xs-3">Present: <span>'+res.breakdown.total.Present+'</span></div>\
+                <div class="col-md-12 col-sm-12 col-xs-12">How '+res.voters[ voter ].voter.title+'. ' + res.voters[ voter ].voter.first_name + ' ' +res.voters[ voter ].voter.last_name + ' voted: '+ res.voters[ voter ].vote +'</div>\
+                <div class="col-md-6 col-sm-6 col-xs-6" id="bill-date">URL: <a href="'+res.bill.urls.congress+'">'+res.bill.urls.congress+'</a></div>\
+                <div class="col-md-6 col-sm-6 col-xs-6">Last Vote At: '+new Date(res.bill.last_vote_at).toLocaleString()+'</div>\
+              </div>';
+
+            $('#bills').append(item);
+          }
+          //tally recent votes!
           votes[ res.voters[ voter ].vote ]++;
         }
       };
@@ -756,7 +772,9 @@ App.prototype._getVotesById = function(id) {
 App.prototype._clearUI = function() {
   $('#committees').empty();
   $('#committee-members').empty();
+  $('#bills').empty();
   $('#committees').hide();
   $('#committees-empty').hide();
+  $('#bills-container').hide();
 }
 
