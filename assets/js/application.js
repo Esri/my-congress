@@ -428,6 +428,8 @@ App.prototype._getLegByLatLong = function(e) {
   var self = this;
 
   $('#col-left').fadeOut();
+  $('#committees').hide();
+  $('#committees-empty').hide();
   this._clearUI();
 
   var mapPoint = e.mapPoint;
@@ -485,6 +487,8 @@ App.prototype._getLegByName = function(name) {
   var self = this;
 
   $('#col-left').fadeOut();
+  $('#committees').hide();
+  $('#committees-empty').hide();
   this._clearUI();
 
   var first_name = name.split(' ')[ 0 ];
@@ -536,6 +540,8 @@ App.prototype._getLegByZipcode = function(zipcode) {
   var self = this;
   
   $('#col-left').fadeOut();
+  $('#committees').hide();
+  $('#committees-empty').hide();
   this._clearUI();
 
   var url = "https://congress.api.sunlightfoundation.com/legislators/locate?zip="+zipcode+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
