@@ -225,11 +225,21 @@ App.prototype._removeSelectedFeature = function(type) {
 }
 
 
+/*
+* Populate infowindow with attributes from FeatureLayer
+*
+*/
 App.prototype._showHoverWindow = function(e) {
   var self = this;
   $('#hoverinfo').show().css({left:e.clientX+10+'px', top:e.clientY+10+'px'});
-  $('#hoverinfo').html('<div>State: '+e.graphic.attributes.STATE_ABBR+'</div><div>District: '+e.graphic.attributes.CD113FIPS+'<div>');
+
+  var html = '<div>['+e.graphic.attributes.PARTY.charAt(0)+'] '+e.graphic.attributes.NAME+'</div>\
+    <div>State: '+e.graphic.attributes.STATE_ABBR+'</div>\
+    <div>District: '+e.graphic.attributes.CD113FIPS+'<div>'
+
+  $('#hoverinfo').html( html );
 }
+
 
 /*
 * Get ALL member names
@@ -298,7 +308,7 @@ App.prototype._buildStyler = function() {
 
 /*
 * Classbreaks styling of main feature layer
-*
+* INSANE 
 *
 */
 App.prototype._styleMap = function() {
@@ -417,6 +427,9 @@ App.prototype._getAllCommittees = function() {
 App.prototype._getLegByLatLong = function(e) {
   var self = this;
 
+  $('#col-left').fadeOut();
+  this._clearUI();
+
   var mapPoint = e.mapPoint;
   var lon = mapPoint.getLongitude().toFixed(2);
   var lat = mapPoint.getLatitude().toFixed(2);
@@ -446,7 +459,8 @@ App.prototype._getLegByLatLong = function(e) {
       $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
       $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
       $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
-      $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "" );
+      $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : rep.district );
+      $($('.legislator')[ i ]).find('.rank-title').html( (rep.state_rank) ? "State Rank" : "District" );
       $($('.legislator')[ i ]).show();
 
       //show icon for missing rep photos
@@ -469,6 +483,9 @@ App.prototype._getLegByLatLong = function(e) {
 */ 
 App.prototype._getLegByName = function(name) {
   var self = this;
+
+  $('#col-left').fadeOut();
+  this._clearUI();
 
   var first_name = name.split(' ')[ 0 ];
   var last_name = name.split(' ')[ 1 ];
@@ -518,6 +535,9 @@ App.prototype._getLegByName = function(name) {
 App.prototype._getLegByZipcode = function(zipcode) {
   var self = this;
   
+  $('#col-left').fadeOut();
+  this._clearUI();
+
   var url = "https://congress.api.sunlightfoundation.com/legislators/locate?zip="+zipcode+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
   //sunlight api lookup
@@ -601,8 +621,8 @@ App.prototype._getCommitteeMembers = function(rep) {
 App.prototype._showCommittees = function(name) {
   var self = this;
 
-  $('#committees').empty();
-  $('#committee-members').empty();
+  this._clearUI();
+  $('#committees').show().height('400px');
 
   var header = '<h3>Committees '+name+' is Member of</h3>';
   $('#committees').append(header);
@@ -630,6 +650,8 @@ App.prototype._showCommittees = function(name) {
 App.prototype._showCommitteeMembers = function(name) {
   var self = this;
   var committees = this.allCommittees.results;
+  
+  $('#committee-members').show();
 
   $.each(committees, function(i, committee) {
     if (committee.name === name) {
@@ -640,12 +662,18 @@ App.prototype._showCommitteeMembers = function(name) {
         $('#committee-members').append(header);
 
         $.each(committee.members, function(i, rep) {
-          var face = '<img src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
+          var face = '<img class="committee-member-photos" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
           $('#committee-members').append( face );
         });
 
       }
     }
+  });
+  $('#committees').css({'height': '125px'});
+  $('.committee-member-photos').tooltip();
+  $('.committee-member-photos').on('click', function(e) {
+    var id = e.target.id;
+    self._getLegByName( id );
   });
 
 } 
@@ -659,6 +687,7 @@ App.prototype._showCommitteeMembers = function(name) {
 App.prototype._showMemberDetails = function(name) {
   var self = this;
 
+  $('#col-left').show();
   $('#member-name').html(name);
 
   $.each(this.allLegislators, function(i, leg) {
@@ -675,6 +704,11 @@ App.prototype._showMemberDetails = function(name) {
 }
 
 
+/*
+*
+*
+*
+*/
 App.prototype._getVotesById = function(id) {
   var self = this;
 
@@ -682,7 +716,6 @@ App.prototype._getVotesById = function(id) {
   $('.voting-loader').show();
 
   //get vote history for selected member
-  //var url = "https://congress.api.sunlightfoundation.com/votes?voter_ids."+id+"__exists=true&fields=roll_id,voted_at,vote,result,breakdown.total&order=voted_at&per_page=100&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
   var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,breakdown.total"
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0}
@@ -705,5 +738,19 @@ App.prototype._getVotesById = function(id) {
     $('#last-50-not-voting').html(votes["Not Voting"]);
   });
 
+}
+
+
+
+/*
+* Empties, clears, hides UI elements as needed
+*
+*
+*/
+App.prototype._clearUI = function() {
+  $('#committees').empty();
+  $('#committee-members').empty();
+  $('#committees').hide();
+  $('#committees-empty').hide();
 }
 

@@ -324,6 +324,23 @@ body {
   display:none;
 }
 
+#committees {
+  display:none;
+  height:400px;
+  overflow: hidden;
+  overflow-y:auto;
+  -webkit-transition: height 1s;
+  -moz-transition: height 1s;
+  transition: height 1s;
+
+}
+
+#committee-members {
+  display:none;
+  border-top: 1px solid #CCC;
+  margin-top: 20px;
+}
+
 .committee {
   cursor: pointer;
 }
@@ -340,6 +357,19 @@ body {
   float:left;
   width:50px;
   margin:10px;
+}
+
+.committee-member-photos {
+  border:1px solid #F8f8f8;
+}
+
+.committee-member-photos:hover {
+  cursor: pointer;
+  border:1px solid #444;
+  -webkit-transition: all 1s ease-in-out;
+  -moz-transition: all 1s ease-in-out;
+  -o-transition: all 1s ease-in-out;
+  transition: all 1s ease-in-out;
 }
 
 
