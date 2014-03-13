@@ -2,7 +2,9 @@ var App = function(){
 
   //resize map container
   var height = $(window).height() - 200;
+  var width = $(window).width();
   $('#map').css('height', height+'px');
+  $('#congress-seal').css('margin-left', (width / 2) - 25 + 'px');
 
   this.initMap();
 };
@@ -76,7 +78,10 @@ App.prototype._wire = function() {
     self.map.resize();
     
     var height = $(window).height() - 200;
+    var width = $(window).width();
+    
     $('#map').css('height', height+'px');
+    $('#congress-seal').css('margin-left', (width / 2) - 25 + 'px');
 
   });
 
