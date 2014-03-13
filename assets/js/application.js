@@ -6,6 +6,8 @@ var App = function(){
   $('#map').css('height', height+'px');
   $('#congress-seal').css('margin-left', (width / 2) - 25 + 'px');
 
+  this._getAllCommittees();
+  this._getAllLegNames();
   this.initMap();
 };
 
@@ -52,6 +54,7 @@ App.prototype.initMap = function() {
     });
 
     self.featureLayer = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/1",{
+      mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
       outFields: ["*"]
     });
 
@@ -67,8 +70,6 @@ App.prototype.initMap = function() {
     });
 
     self._wire();
-    self._getAllLegNames();
-    self._getAllCommittees();
 
   });
 
@@ -241,6 +242,7 @@ App.prototype._getAllLegNames = function() {
   //sunlight api lookup
   this.legislators = [];
   this.allLegislators = [];
+
   this.theme = {};
   $.getJSON(url, function(data) {
 
@@ -259,8 +261,37 @@ App.prototype._getAllLegNames = function() {
       name: "reps",
       local: self.legislators
     });
+    
+    self._buildStyler();
 
   });
+
+}
+
+/*
+* To style map based on number of committees rep is a member of, calculate this
+*
+*/
+App.prototype._buildStyler = function() {
+  var self = this; 
+
+  if ( this.allLegislators.length <= 0 || this.allCommittees === undefined || this.memberCommitteeCount !== undefined ) return;
+
+  this.memberCommitteeCount = {};
+  $.each(self.legislators, function(i, name) {
+    self.memberCommitteeCount[ name ] = 0;
+  });
+
+  $.each(self.allCommittees.results, function(i, comm) {
+    for (var mem in comm.members ) {
+
+      var n = comm.members[ mem ].legislator.first_name + ' ' + comm.members[ mem ].legislator.last_name;
+      self.memberCommitteeCount[ n ]++;
+
+    }
+  });
+
+  if ( !self._mapStyled ) this._styleMap();
 
 }
 
@@ -273,7 +304,9 @@ App.prototype._getAllLegNames = function() {
 App.prototype._styleMap = function() {
   var self = this;
 
-  var breaks = self.theme;
+  if ( !this.memberCommitteeCount || this.featureLayer.graphics.length <= 5 ) return; 
+  this._mapStyled = true;
+  
   require(["esri/renderers/SimpleRenderer",
     "esri/renderers/ClassBreaksRenderer", "esri/symbols/SimpleFillSymbol",
     "dojo/_base/Color", "dojo/dom-style", "esri/renderers/UniqueValueRenderer", "esri/symbols/SimpleLineSymbol"], 
@@ -281,26 +314,35 @@ App.prototype._styleMap = function() {
 
     //console.log('grpahics', app.featureLayer.graphics.length);  
     var layers = [self.featureLayer, self.featureLayerGen];
+    
     $.each(layers, function(i,layer) {
       $.each(layer.graphics, function(i, graphic) {
         if ( graphic.attributes.PARTY === "Republican" ) {
+
+          var name = graphic.attributes.NAME.split(' ')[0] + ' ' +graphic.attributes.LAST_NAME;
           
-          if ( graphic.attributes.SQMI < 5000 ) {
+          if ( self.memberCommitteeCount[ name ] <= 1 ) {
             graphic.attributes[ "schema" ] = "r0";
-          } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
+          } else if ( self.memberCommitteeCount[ name ] > 1 && self.memberCommitteeCount[ name ] < 5 ) {
             graphic.attributes[ "schema" ] = "r1";
-          } else {
+          } else if ( self.memberCommitteeCount[ name ] >= 5 && self.memberCommitteeCount[ name ] < 9 ) {
             graphic.attributes[ "schema" ] = "r2";
+          } else {
+            graphic.attributes[ "schema" ] = "r3";
           }
           
         } else {
 
-          if ( graphic.attributes.SQMI < 5000 ) {
+          var name = graphic.attributes.NAME.split(' ')[0] + ' ' +graphic.attributes.LAST_NAME;
+
+          if ( self.memberCommitteeCount[ name ] <= 1 ) {
             graphic.attributes[ "schema" ] = "d0";
-          } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
+          } else if ( self.memberCommitteeCount[ name ] > 1 && self.memberCommitteeCount[ name ] < 5 ) {
             graphic.attributes[ "schema" ] = "d1";
-          } else {
+          } else if ( self.memberCommitteeCount[ name ] >= 5 && self.memberCommitteeCount[ name ] < 9 ) {
             graphic.attributes[ "schema" ] = "d2";
+          } else {
+            graphic.attributes[ "schema" ] = "d3";
           }
 
         }
@@ -312,12 +354,14 @@ App.prototype._styleMap = function() {
 
     var renderer = new UniqueValueRenderer(defaultSymbol, "schema");
     renderer.addValue("d0", new SimpleFillSymbol().setColor(new Color([222,235,247, 0.7])));
-    renderer.addValue("d1", new SimpleFillSymbol().setColor(new Color([158,202,225, 0.7])));
-    renderer.addValue("d2", new SimpleFillSymbol().setColor(new Color([49,130,189, 0.7])));
+    renderer.addValue("d1", new SimpleFillSymbol().setColor(new Color([189,215,231, 0.7])));
+    renderer.addValue("d2", new SimpleFillSymbol().setColor(new Color([158,202,225, 0.7])));
+    renderer.addValue("d3", new SimpleFillSymbol().setColor(new Color([49,130,189, 0.7])));
     
     renderer.addValue("r0", new SimpleFillSymbol().setColor(new Color([254,224,210, 0.7])));
-    renderer.addValue("r1", new SimpleFillSymbol().setColor(new Color([252,146,114, 0.7])));
-    renderer.addValue("r2", new SimpleFillSymbol().setColor(new Color([222,45,38, 0.7])));
+    renderer.addValue("r1", new SimpleFillSymbol().setColor(new Color([252,174,145, 0.7])));
+    renderer.addValue("r2", new SimpleFillSymbol().setColor(new Color([252,146,114, 0.7])));
+    renderer.addValue("r3", new SimpleFillSymbol().setColor(new Color([222,45,38, 0.7])));
 
     var json = renderer.toJson();
     $.each(json.uniqueValueInfos, function(i,sys) {
@@ -358,10 +402,10 @@ App.prototype._setMapExtent = function() {
 */ 
 App.prototype._getAllCommittees = function() {
   var self = this;
-
   var url = "https://congress.api.sunlightfoundation.com/committees?per_page=all&fields=members,name&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
   $.getJSON(url, function(data) {
     self.allCommittees = data;
+    self._buildStyler();
   });
 }
 
