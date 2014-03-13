@@ -81,7 +81,7 @@ body {
 #legislators {
   position:absolute;
   bottom:0px;
-  height:85px;
+  height:auto;
   width:100%;
   pointer-events:none;
 }
@@ -91,7 +91,6 @@ body {
 }
 
 .legislator {
-  height:85px;
   display: none;
   pointer-events:auto;
   z-index: 1000;
@@ -99,7 +98,9 @@ body {
 
 .legislator-inner {
   background: #f8f8f8;
-  height: 85px;
+  min-height: 85px;
+  height:auto;
+  overflow: hidden;
   padding: 5px;
   margin-left: -12px;
   margin-right: -12px;
@@ -283,6 +284,7 @@ body {
 
 .voting-loader {
   margin-top:100px !important; 
+  margin-bottom:80px;
 }
 
 .loader-help {

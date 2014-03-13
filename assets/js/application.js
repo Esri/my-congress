@@ -618,7 +618,7 @@ App.prototype._showMemberDetails = function(name) {
 App.prototype._getVotesById = function(id) {
   var self = this;
 
-  $('#voting-record').fadeOut();
+  $('#voting-record').hide();
   $('.voting-loader').show();
 
   //get vote history for selected member
@@ -627,7 +627,7 @@ App.prototype._getVotesById = function(id) {
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0}
   $.getJSON(url, function(data) {
-    console.log('data', data);
+    //console.log('data', data);
     
     $.each(data.results, function(i, res) {
       for ( var voter in res.voters ) {
