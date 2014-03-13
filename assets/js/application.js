@@ -47,11 +47,21 @@ App.prototype.initMap = function() {
     //});
     //var url = "http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer";
     //self.featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
+    self.featureLayerGen = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/2",{
+      outFields: ["*"]
+    });
+
     self.featureLayer = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/1",{
       outFields: ["*"]
     });
 
+    self.map.addLayer(self.featureLayerGen);
     self.map.addLayer(self.featureLayer);
+
+    self.featureLayerGen.on('update-end', function(obj) {
+      self._styleMap();
+    });
+
     self.featureLayer.on('update-end', function(obj) {
       self._styleMap();
     });
@@ -270,28 +280,31 @@ App.prototype._styleMap = function() {
     function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle, UniqueValueRenderer, SimpleLineSymbol) { 
 
     //console.log('grpahics', app.featureLayer.graphics.length);  
-    $.each(self.featureLayer.graphics, function(i, graphic) {
-      if ( graphic.attributes.PARTY === "Republican" ) {
-        
-        if ( graphic.attributes.SQMI < 5000 ) {
-          graphic.attributes[ "schema" ] = "r0";
-        } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
-          graphic.attributes[ "schema" ] = "r1";
+    var layers = [self.featureLayer, self.featureLayerGen];
+    $.each(layers, function(i,layer) {
+      $.each(layer.graphics, function(i, graphic) {
+        if ( graphic.attributes.PARTY === "Republican" ) {
+          
+          if ( graphic.attributes.SQMI < 5000 ) {
+            graphic.attributes[ "schema" ] = "r0";
+          } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
+            graphic.attributes[ "schema" ] = "r1";
+          } else {
+            graphic.attributes[ "schema" ] = "r2";
+          }
+          
         } else {
-          graphic.attributes[ "schema" ] = "r2";
-        }
-        
-      } else {
 
-        if ( graphic.attributes.SQMI < 5000 ) {
-          graphic.attributes[ "schema" ] = "d0";
-        } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
-          graphic.attributes[ "schema" ] = "d1";
-        } else {
-          graphic.attributes[ "schema" ] = "d2";
-        }
+          if ( graphic.attributes.SQMI < 5000 ) {
+            graphic.attributes[ "schema" ] = "d0";
+          } else if ( graphic.attributes.SQMI >= 400 && graphic.attributes.SQMI < 14500 ) {
+            graphic.attributes[ "schema" ] = "d1";
+          } else {
+            graphic.attributes[ "schema" ] = "d2";
+          }
 
-      }
+        }
+      });
     });
 
     var defaultSymbol = new SimpleFillSymbol();
@@ -317,10 +330,13 @@ App.prototype._styleMap = function() {
     });
 
     var rend = new UniqueValueRenderer(json);
+
+    self.featureLayerGen.setRenderer( rend );
+    self.featureLayerGen.redraw();
+
     self.featureLayer.setRenderer( rend );
     self.featureLayer.redraw();
 
-    console.log('restyle feature layer!')
   });
 
 }
@@ -332,7 +348,7 @@ App.prototype._styleMap = function() {
 */
 App.prototype._setMapExtent = function() {
   var extent = this.selectedGraphic.geometry.getExtent();
-  console.log('extent', extent);
+  //console.log('extent', extent);
   this.map.setExtent(extent.expand(5));
 }
 
