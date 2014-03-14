@@ -62,6 +62,11 @@ App.prototype.initMap = function() {
       smartNavigation: false
     });
 
+    self.placeNames = new FeatureLayer("http://studio.esri.com/arcgis/rest/services/World/WorldCitiesBlack/MapServer/2", {
+      mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
+      outFields: ["CITY_NAME"]
+    });
+
     self.featureLayerGen = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/2",{
       outFields: ["*"]
     });
@@ -73,6 +78,7 @@ App.prototype.initMap = function() {
 
     self.map.addLayer(self.featureLayerGen);
     self.map.addLayer(self.featureLayer);
+    self.map.addLayer(self.placeNames);
 
     self.featureLayerGen.on('update-end', function(obj) {
       var style = self._getMapStyle();
@@ -395,10 +401,10 @@ App.prototype._buildStyler = function() {
 App.prototype._defaultStyle = function() {
   var self = this;
 
-  require(["esri/renderers/SimpleRenderer",
+  require(["esri/renderers/SimpleRenderer", "esri/layers/LabelLayer", "esri/symbols/TextSymbol",
     "esri/renderers/ClassBreaksRenderer", "esri/symbols/SimpleFillSymbol",
     "dojo/_base/Color", "dojo/dom-style", "esri/renderers/UniqueValueRenderer", "esri/symbols/SimpleLineSymbol"], 
-    function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle, UniqueValueRenderer, SimpleLineSymbol) { 
+    function(SimpleRenderer, LabelLayer, TextSymbol, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle, UniqueValueRenderer, SimpleLineSymbol) { 
     
 
     var defaultSymbol = new SimpleFillSymbol();
@@ -426,6 +432,26 @@ App.prototype._defaultStyle = function() {
 
       self.featureLayer.setRenderer( rend );
       self.featureLayer.redraw();
+
+
+      //TEXT 
+      var labelField = "CITY_NAME";
+
+      // create a renderer for the states layer to override default symbology
+      var namesColor = new Color("#FFF");
+      
+      // create a text symbol to define the style of labels
+      var namesLabel = new TextSymbol().setColor( namesColor );
+      namesLabel.font.setSize( "10pt" );
+      namesLabel.font.setFamily( "arial" );
+      namesLabel.x = 10;
+      namesLabelRenderer = new SimpleRenderer( namesLabel );
+      var labels = new LabelLayer( { id: "labels" } );
+      
+      labels.addFeatureLayer(self.placeNames, namesLabelRenderer, "${" + labelField + "}");
+      
+      // add the label layer to the map
+      self.map.addLayer(labels);
   });
 
 }
