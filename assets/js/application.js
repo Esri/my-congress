@@ -1,16 +1,36 @@
 var App = function(){
 
-  //resize map container
+  //resize map container based on window size
   var height = $(window).height() - 200;
   var width = $(window).width();
   $('#map').css('height', height+'px');
   $('#congress-seal').css('margin-left', (width / 2) - 25 + 'px');
 
+  //global loader across top of page
+  $( document ).ajaxStart(function() {
+    NProgress.start();
+  });
+
+  $( document ).ajaxStop(function() {
+    NProgress.done();
+  });
+
+  this._mapStyle = "default";
+
+  //right off the bat kick off calls to Sunlight for data
   this._getAllCommittees();
   this._getAllLegNames();
+
+  //init map
   this.initMap();
 };
 
+
+/*
+* Setup map
+* Custom basemap
+* FeatureLayers with U.S. congressional districts
+*/
 App.prototype.initMap = function() {
   var self = this;
 
@@ -18,14 +38,14 @@ App.prototype.initMap = function() {
     "esri/layers/FeatureLayer"], 
     function(Map, ArcGISTiledMapServiceLayer, FeatureLayer) { 
 
-    // hook up elevation slider events
-    
+    //custom basemap
     esriConfig.defaults.map.basemaps.dotted = {
       baseMapLayers: [
         { url: "http://studio.esri.com/arcgis/rest/services/World/WorldBasemapBlack/MapServer" }
       ],
       title: "Dots"
     };
+
     /*
     esriConfig.defaults.map.basemaps.darkgray = {
       baseMapLayers: [
@@ -42,13 +62,6 @@ App.prototype.initMap = function() {
       smartNavigation: false
     });
 
-    //add districts
-    //var districtsUrl = "http://dcdev.esri.com/arcgis/rest/services/Congress/DistrictsByParty/MapServer";
-    //var districtsLayer = new ArcGISTiledMapServiceLayer(districtsUrl, {
-    //  opacity: 0.8
-    //});
-    //var url = "http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer";
-    //self.featureLayer = new FeatureLayer("http://services.arcgis.com/bkrWlSKcjUDFDtgw/arcgis/rest/services/districts113/FeatureServer/0",{
     self.featureLayerGen = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/2",{
       outFields: ["*"]
     });
@@ -62,11 +75,24 @@ App.prototype.initMap = function() {
     self.map.addLayer(self.featureLayer);
 
     self.featureLayerGen.on('update-end', function(obj) {
-      self._styleMap();
+      var style = self._getMapStyle();
+      
+      if ( style === "default" ) {
+        self._defaultStyle();
+      } else {
+        self._styleByCommitteeCount();
+      }
+
     });
 
     self.featureLayer.on('update-end', function(obj) {
-      self._styleMap();
+      var style = self._getMapStyle();
+      
+      if ( style === "default" ) {
+        self._defaultStyle();
+      } else {
+        self._styleByCommitteeCount();
+      }
     });
 
     self._wire();
@@ -135,18 +161,45 @@ App.prototype._wire = function() {
     self._showCommittees(name.split('.')[1]);
   });
 
-  $( document ).ajaxStart(function() {
-    NProgress.start();
+  //LEGEND
+  $('#style-by-count').on('change', function() {
+    var checked = $(this).is(':checked');
+    if ( checked ) {
+
+      self._mapStyle = "byCommitteeSize";
+      self._styleByCommitteeCount();
+      $('#by-count-container').show();
+
+    } else {
+      
+      self._mapStyle = "default"
+      self._defaultStyle();
+      $('#by-count-container').hide();
+
+    }
   });
 
-  $( document ).ajaxStop(function() {
-    NProgress.done();
-  });
 }
 
 
+/* returns how map is currently styled */
+App.prototype._getMapStyle = function() {
+  return this._mapStyle;
+}
+
 /*
-* Select polygons
+* Set Map Extent
+*
+*/
+App.prototype._setMapExtent = function() {
+  var extent = this.selectedGraphic.geometry.getExtent();
+  this.map.setExtent(extent.expand(5));
+}
+
+
+
+/*
+* On polygon click, show as SELECTED on map
 *
 */
 App.prototype._featureSelected = function(graphicJson, type) {
@@ -185,6 +238,12 @@ App.prototype._featureSelected = function(graphicJson, type) {
 }
 
 
+
+/*
+* Pass a district (#) AND state to select on map
+* 
+*
+*/
 App.prototype._selectDistrict = function(district, state) {
   var self = this;
   var g;
@@ -197,6 +256,7 @@ App.prototype._selectDistrict = function(district, state) {
 
 }
 
+
 /*
 * Remove selected polygon
 *
@@ -204,6 +264,7 @@ App.prototype._selectDistrict = function(district, state) {
 App.prototype._removeSelectedFeature = function(type) {
   var self = this;
 
+  //do not remove selected state polygon on hover events!
   if ( type === "mouse-over" ) {
     $.each(this.map.graphics.graphics, function(index,gra){
       if (gra) {
@@ -225,9 +286,10 @@ App.prototype._removeSelectedFeature = function(type) {
 }
 
 
+
 /*
 * Populate infowindow with attributes from FeatureLayer
-*
+* 
 */
 App.prototype._showHoverWindow = function(e) {
   var self = this;
@@ -241,19 +303,22 @@ App.prototype._showHoverWindow = function(e) {
 }
 
 
+
+
 /*
-* Get ALL member names
+* Get ALL member names, store as app.legislators for search typeahead
+* Get ALL legislators, store as app.allLegislators for feature use
 *
 */ 
 App.prototype._getAllLegNames = function() {
   var self = this;
   var url = "https://congress.api.sunlightfoundation.com/legislators?per_page=all&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
-  //sunlight api lookup
+  //store on app
   this.legislators = [];
   this.allLegislators = [];
 
-  this.theme = {};
+  //sunlight api lookup
   $.getJSON(url, function(data) {
 
     //save array of all leg for later use
@@ -261,22 +326,36 @@ App.prototype._getAllLegNames = function() {
 
     //save just names for 'typeahead'
     $.each(data.results, function(i, rep) {
-      if ( rep.district ) {
-        self.theme[ rep.district ] = rep.party;
-      }
       self.legislators.push(rep.first_name + ' ' + rep.last_name);
     });
 
+    //wire typeahead with new legislators array
     $('#search-reps').typeahead({
       name: "reps",
       local: self.legislators
     });
-    
-    self._buildStyler();
 
   });
 
 }
+
+
+
+/*
+* Get ALL committees
+*
+*/ 
+App.prototype._getAllCommittees = function() {
+  var self = this;
+  var url = "https://congress.api.sunlightfoundation.com/committees?per_page=all&fields=members,name&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  $.getJSON(url, function(data) {
+    self.allCommittees = data;
+  });
+}
+
+
+
+
 
 /*
 * To style map based on number of committees rep is a member of, calculate this
@@ -301,9 +380,57 @@ App.prototype._buildStyler = function() {
     }
   });
 
-  if ( !self._mapStyled ) this._styleMap();
+  if ( !self._mapStyled === "default" ) this._defaultStyle();
 
 }
+
+
+
+
+/*
+* Default style for map | Blue and Red
+* 
+*
+*/
+App.prototype._defaultStyle = function() {
+  var self = this;
+
+  require(["esri/renderers/SimpleRenderer",
+    "esri/renderers/ClassBreaksRenderer", "esri/symbols/SimpleFillSymbol",
+    "dojo/_base/Color", "dojo/dom-style", "esri/renderers/UniqueValueRenderer", "esri/symbols/SimpleLineSymbol"], 
+    function(SimpleRenderer, ClassBreaksRenderer, SimpleFillSymbol, Color, domStyle, UniqueValueRenderer, SimpleLineSymbol) { 
+    
+
+    var defaultSymbol = new SimpleFillSymbol();
+        defaultSymbol.outline.setStyle(SimpleLineSymbol.STYLE_DASH, new Color([255,255,255,255]), 3);
+
+      var renderer = new UniqueValueRenderer(defaultSymbol, "PARTY");
+      renderer.addValue("Democrat", new SimpleFillSymbol().setColor(new Color([49,130,189, 0.7])));
+      renderer.addValue("Republican", new SimpleFillSymbol().setColor(new Color([222,45,38, 0.7])));
+      renderer.addValue("Vacant", new SimpleFillSymbol().setColor(new Color([222,45,38, 0.7])));
+
+      var json = renderer.toJson();
+      $.each(json.uniqueValueInfos, function(i,sys) {
+        sys.symbol.outline = {
+          color: [225,225,225,255],
+          style:"esriSLSSolid",
+          width:0.3,
+          type:"esriSLS"
+        }
+      });
+
+      var rend = new UniqueValueRenderer(json);
+
+      self.featureLayerGen.setRenderer( rend );
+      self.featureLayerGen.redraw();
+
+      self.featureLayer.setRenderer( rend );
+      self.featureLayer.redraw();
+  });
+
+}
+
+
 
 
 /*
@@ -311,11 +438,12 @@ App.prototype._buildStyler = function() {
 * INSANE 
 *
 */
-App.prototype._styleMap = function() {
+App.prototype._styleByCommitteeCount = function() {
   var self = this;
+  
+  this._buildStyler();
 
   if ( !this.memberCommitteeCount || this.featureLayer.graphics.length <= 5 ) return; 
-  this._mapStyled = true;
   
   require(["esri/renderers/SimpleRenderer",
     "esri/renderers/ClassBreaksRenderer", "esri/symbols/SimpleFillSymbol",
@@ -396,28 +524,8 @@ App.prototype._styleMap = function() {
 }
 
 
-/*
-* Set Map Extent
-*
-*/
-App.prototype._setMapExtent = function() {
-  var extent = this.selectedGraphic.geometry.getExtent();
-  //console.log('extent', extent);
-  this.map.setExtent(extent.expand(5));
-}
 
-/*
-* Get ALL committees
-*
-*/ 
-App.prototype._getAllCommittees = function() {
-  var self = this;
-  var url = "https://congress.api.sunlightfoundation.com/committees?per_page=all&fields=members,name&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
-  $.getJSON(url, function(data) {
-    self.allCommittees = data;
-    self._buildStyler();
-  });
-}
+
 
 
 /*
@@ -479,6 +587,8 @@ App.prototype._getLegByLatLong = function(e) {
 
 
 
+
+
 /*
 * Get legislator by first name -- matches with last
 *
@@ -513,6 +623,7 @@ App.prototype._getLegByName = function(name) {
           self._selectDistrict( rep.district, rep.state ); 
         }
 
+        //Update UI
         $('.legislator').hide();
         $($('.legislator')[ 0 ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
         $($('.legislator')[ 0 ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
@@ -532,8 +643,10 @@ App.prototype._getLegByName = function(name) {
   
 };
 
+
+
 /*
-* Get legislator by first name -- matches with last
+* Get legislators by ZIPCODE
 *
 */ 
 App.prototype._getLegByZipcode = function(zipcode) {
@@ -577,8 +690,12 @@ App.prototype._getLegByZipcode = function(zipcode) {
 
 
 
+
+
 /*
 * Get committees
+* Function gets list of committees the CURRENTLY SELECTED members are a member of
+* this.committees is recreated each time a new district is selected
 *
 */ 
 App.prototype._getCommittees = function(rep) {
@@ -598,30 +715,12 @@ App.prototype._getCommittees = function(rep) {
 
 }
 
-/*
-* Get members OF a committee
-*
-*/ 
-App.prototype._getCommitteeMembers = function(rep) {
-  var self = this;
 
-  //committee by member id url
-  var url = "https://congress.api.sunlightfoundation.com/committees?member_ids="+rep.bioguide_id+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
-
-  //get all committees for member
-  var member = (rep.first_name + rep.last_name).replace(/ /g, '');
-
-  this.committees[ member ] = { committees: [] };
-  
-  $.getJSON(url, function(data) {
-    self.committees[ member ].committees = data.results;
-  });
-
-}
 
 
 /*
 * Show committees
+* Shows list of committees in UI
 *
 */ 
 App.prototype._showCommittees = function(name) {
@@ -649,8 +748,10 @@ App.prototype._showCommittees = function(name) {
 } 
 
 
+
 /*
 * Show MEMBERS OF a committee
+* On committee select, show all members of that committee, wire ability to search off that committee member
 *
 */ 
 App.prototype._showCommitteeMembers = function(name) {
@@ -685,10 +786,12 @@ App.prototype._showCommitteeMembers = function(name) {
 } 
 
 
+
+
 /*
 * Member details
-*
-*
+* When member is selected, show their details (address, phone, contact)
+* Initiates call to GET VOTES, which populates voting record for specified Rep 
 */
 App.prototype._showMemberDetails = function(name) {
   var self = this;
@@ -710,9 +813,12 @@ App.prototype._showMemberDetails = function(name) {
 }
 
 
+
+
 /*
-*
-*
+* Takes rep id
+* Does search to Sunlight votes API 
+* Populates UI with voting record, and break down of last 50 votes by specified Rep
 *
 */
 App.prototype._getVotesById = function(id) {
@@ -766,7 +872,7 @@ App.prototype._getVotesById = function(id) {
 
 /*
 * Empties, clears, hides UI elements as needed
-*
+* TODO Build this out to handle more
 *
 */
 App.prototype._clearUI = function() {
@@ -777,4 +883,3 @@ App.prototype._clearUI = function() {
   $('#committees-empty').hide();
   $('#bills-container').hide();
 }
-

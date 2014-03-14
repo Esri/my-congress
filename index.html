@@ -49,17 +49,30 @@
       <div id="map">
         <div id="hoverinfo"></div>
         <div id="legend">
-          <h6>Democrat Controlled Districts</h6>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#eff3ff"></div>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#bdd7e7"></div>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#6baed6"></div>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#2171b5"></div>
-          <h6>Republican Controlled Districts</h6>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#fee5d9"></div>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#fcae91"></div>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#fb6a4a"></div>
-          <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#cb181d"></div>
-          <h6 id="key-code"> 1 &nbsp; &nbsp; &#8592; #Committees &#8594; &nbsp; &nbsp; 10 </h6>
+          
+          <div class="col-md-4 col-xs-4 col-sm-4" id="party-dem"></div>
+          <div class="col-md-8 col-xs-8 col-sm-8">Democrat</div>
+          <div class="col-md-4 col-xs-4 col-sm-4" id="party-gop"></div>
+          <div class="col-md-8 col-xs-8 col-sm-8">Republican</div>
+          
+            <div class="checkbox col-md-12 col-xs-12 col-sm-12">
+              <label>
+                <input type="checkbox" id="style-by-count"> Style By District Committee Count
+              </label>
+            </div>
+          <div id="by-count-container">
+            <h6>Democrat Controlled Districts</h6>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#eff3ff"></div>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#bdd7e7"></div>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#6baed6"></div>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#2171b5"></div>
+            <h6>Republican Controlled Districts</h6>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#fee5d9"></div>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#fcae91"></div>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#fb6a4a"></div>
+            <div class="col-md-3 col-xs-3 col-sm-3 color" style="background:#cb181d"></div>
+            <h6 id="key-code"> 1 &nbsp; &nbsp; &#8592; #Committees &#8594; &nbsp; &nbsp; 10 </h6>
+          </div>
         </div>
       </div>
       <div id="legislators">

@@ -72,6 +72,38 @@ body {
   padding: 5px;
   padding-top: 0px;
   padding-bottom: 9px;
+  width: 200px;
+  font-size:10pt;
+}
+
+#legend label {
+  font-size:8pt;
+}
+
+#legend input {
+  margin-top: 9px;
+}
+
+#legend .checkbox {
+  margin-top:0px;
+}
+
+#legend #by-count-container {
+  display:none;
+}
+
+#party-dem {
+  background:#2171b5;
+  height: 10px;
+  opacity: 0.8;
+  margin-top:10px;
+}
+
+#party-gop {
+  background:#cb181d;
+  height: 10px;
+  opacity: 0.8;
+  margin-top:10px;
 }
 
 #legend h6 {
