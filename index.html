@@ -172,21 +172,24 @@
               </div>
               <div class="col-md-9" id="last-50">
                 <h4 class="gray-title">Last 50 Votes</h4>
-                <div class="col-md-3 col-xs-3 col-sm-3">
-                  <h5>Yea</h5>
-                  <h6 id="last-50-yea">0</h6>
-                </div>
-                <div class="col-md-3 col-xs-3 col-sm-3">
-                  <h5>Nay</h5>
-                  <h6 id="last-50-nay">0</h6>
-                </div>
-                <div class="col-md-3 col-xs-3 col-sm-3">
-                  <h5>Present</h5>
-                  <h6 id="last-50-present">0</h6>
-                </div>
-                <div class="col-md-3 col-xs-3 col-sm-3">
-                  <h5>Not Voting</h5>
-                  <h6 id="last-50-not-voting">0</h6>
+                <div id="pie-chart-votes"></div>
+                <div style="display:none">
+                  <div class="col-md-3 col-xs-3 col-sm-3">
+                    <h5>Yea</h5>
+                    <h6 id="last-50-yea">0</h6>
+                  </div>
+                  <div class="col-md-3 col-xs-3 col-sm-3">
+                    <h5>Nay</h5>
+                    <h6 id="last-50-nay">0</h6>
+                  </div>
+                  <div class="col-md-3 col-xs-3 col-sm-3">
+                    <h5>Present</h5>
+                    <h6 id="last-50-present">0</h6>
+                  </div>
+                  <div class="col-md-3 col-xs-3 col-sm-3">
+                    <h5>Not Voting</h5>
+                    <h6 id="last-50-not-voting">0</h6>
+                  </div>
                 </div>
               </div>
             </div>
@@ -214,11 +217,13 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="assets/js/d3.v3.min.js"></script>
     <script type='application/javascript' src='assets/js/fastclick.js'></script>
     <script src="assets/js/nprogress.js"></script>
     <script src="http://js.arcgis.com/3.8/"></script>
     <script src="assets/js/typeahead.min.js"></script>
     <script src="assets/js/application.js"></script>
+    <script src="assets/js/chart.js"></script>
     <script src="assets/js/bootstrap.min.js"></script>
 
     <script>

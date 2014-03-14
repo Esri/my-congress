@@ -854,9 +854,11 @@ App.prototype._getVotesById = function(id) {
   $('.voting-loader').show();
 
   //get vote history for selected member
-  var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total"
+  var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total,breakdown.party"
   
-  var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0}
+  var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0};
+  var party = {"with": 0, "against": 0};
+
   $.getJSON(url, function(data) {
     //console.log('data', data);
     
@@ -865,6 +867,7 @@ App.prototype._getVotesById = function(id) {
         if ( voter === id ) {
           if (res.bill) {
             $('#bills-container').show();
+            var d = ( res.bill.last_vote_at ) ? res.bill.last_vote_at : res.bill.last_action_at;
             var item = '<div class="bill"><h4>'+res.bill.bill_id+'</h4>\
                 <h5>'+res.bill.official_title+'</h5>\
                 <div class="col-md-5 col-sm-5 col-xs-4">Result: <span class="'+res.result+'">'+res.result+'</span></div>\
@@ -873,7 +876,7 @@ App.prototype._getVotesById = function(id) {
                 <div class="col-md-3 col-sm-3 col-xs-3">Present: <span>'+res.breakdown.total.Present+'</span></div>\
                 <div class="col-md-12 col-sm-12 col-xs-12">How '+res.voters[ voter ].voter.title+'. ' + res.voters[ voter ].voter.first_name + ' ' +res.voters[ voter ].voter.last_name + ' voted: '+ res.voters[ voter ].vote +'</div>\
                 <div class="col-md-6 col-sm-6 col-xs-6" id="bill-date">URL: <a href="'+res.bill.urls.congress+'">'+res.bill.urls.congress+'</a></div>\
-                <div class="col-md-6 col-sm-6 col-xs-6">Last Vote At: '+new Date(res.bill.last_vote_at).toLocaleString()+'</div>\
+                <div class="col-md-6 col-sm-6 col-xs-6">Last Vote At: '+new Date( d ).toLocaleString()+'</div>\
               </div>';
 
             $('#bills').append(item);
@@ -883,6 +886,9 @@ App.prototype._getVotesById = function(id) {
         }
       };
     });
+    
+    self._pieChart(votes);
+
     $('.voting-loader').hide();
     $('#voting-record').fadeIn();
     $('#total-votes').html(data.count.toLocaleString());

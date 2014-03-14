@@ -356,6 +356,16 @@ body {
   display:none;
 }
 
+#pie-chart-votes {
+  width:100px;
+  height:100px;
+}
+
+.pie-text {
+  font-size:7pt;
+  color:#FFF;
+}
+
 #committees {
   display:none;
   height:400px;
