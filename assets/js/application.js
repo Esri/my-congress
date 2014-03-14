@@ -857,7 +857,7 @@ App.prototype._getVotesById = function(id) {
   var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total,breakdown.party"
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0};
-  var party = {"with": 0, "against": 0};
+  self.partyLine = {"with": 0, "against": 0};
 
   $.getJSON(url, function(data) {
     //console.log('data', data);
@@ -865,6 +865,9 @@ App.prototype._getVotesById = function(id) {
     $.each(data.results, function(i, res) {
       for ( var voter in res.voters ) {
         if ( voter === id ) {
+          if (res.breakdown.party) {
+            self._getPartyLine(voter, res);
+          }
           if (res.bill) {
             $('#bills-container').show();
             var d = ( res.bill.last_vote_at ) ? res.bill.last_vote_at : res.bill.last_action_at;
@@ -883,23 +886,39 @@ App.prototype._getVotesById = function(id) {
           }
           //tally recent votes!
           votes[ res.voters[ voter ].vote ]++;
+
+          $('#term-start').html(moment(res.voters[ voter ].voter.term_start).format("MMMM DD, YYYY"));
+          $('#term-end').html(moment(res.voters[ voter ].voter.term_end).format("MMMM DD, YYYY"));
         }
       };
     });
     
+    self._partyLinePie();
     self._pieChart(votes);
 
     $('.voting-loader').hide();
     $('#voting-record').fadeIn();
     $('#total-votes').html(data.count.toLocaleString());
-    $('#last-50-yea').html(votes.Yea);
-    $('#last-50-nay').html(votes.Nay);
-    $('#last-50-present').html(votes.Present);
-    $('#last-50-not-voting').html(votes["Not Voting"]);
   });
 
 }
 
+/*
+* Calculate how often a rep votes with party (last 50 votes)
+*
+*/
+App.prototype._getPartyLine = function(voter, res) {
+  var self = this;
+  var voted = res.voters[ voter ].vote;
+  var party = res.voters[ voter ].voter.party;
+  var partyline = ( res.breakdown.party[ party ].Yea > res.breakdown.party[ party ].Nay ) ? "Yea" : "Nay";
+  
+  if ( voted === partyline ) {
+    this.partyLine['with']++;
+  } else {
+    this.partyLine['against']++;
+  }
+}
 
 
 /*

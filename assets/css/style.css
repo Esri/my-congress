@@ -361,6 +361,11 @@ body {
   height:100px;
 }
 
+#pie-chart-party-line {
+  width:100px;
+  height:100px;
+}
+
 .pie-text {
   font-size:7pt;
   color:#FFF;
