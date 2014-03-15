@@ -927,9 +927,12 @@ App.prototype._getPartyLine = function(voter, res) {
 *
 */
 App.prototype._clearUI = function() {
+  console.log('app clear ui fired');
   $('#committees').empty();
   $('#committee-members').empty();
   $('#bills').empty();
+  $('#pie-chart-votes').empty();
+  $('#pie-chart-party-line').empty();
   $('#committees').hide();
   $('#committees-empty').hide();
   $('#bills-container').hide();
