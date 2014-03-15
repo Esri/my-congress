@@ -927,7 +927,6 @@ App.prototype._getPartyLine = function(voter, res) {
 *
 */
 App.prototype._clearUI = function() {
-  console.log('app clear ui fired');
   $('#committees').empty();
   $('#committee-members').empty();
   $('#bills').empty();
