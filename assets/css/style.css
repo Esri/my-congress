@@ -394,6 +394,7 @@ body {
 
 .committee {
   cursor: pointer;
+  border-bottom: dashed 1px #AAA;
 }
 
 .committee.selected {
