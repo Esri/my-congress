@@ -61,10 +61,16 @@ App.prototype.initMap = function() {
       basemap: "dotted",
       smartNavigation: false
     });
+    self.map.on('load', function(){
+      console.log('map on load fired');
+      self.map.disableScrollWheelZoom();
+    });
 
-    self.placeNames = new FeatureLayer("http://studio.esri.com/arcgis/rest/services/World/WorldCitiesBlack/MapServer/2", {
+    self.placeNames = new FeatureLayer("http://studio.esri.com/arcgis/rest/services/World/WorldLabelsWhite/MapServer/2", {
       mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
       outFields: ["CITY_NAME"]
+      //http://studio.esri.com/arcgis/rest/services/World/WorldLabelsWhite/MapServer
+      //http://studio.esri.com/arcgis/rest/services/World/WorldCitiesBlack/MapServer/2
     });
 
     self.featureLayerGen = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/2",{
