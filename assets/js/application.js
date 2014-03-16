@@ -789,9 +789,6 @@ App.prototype._showCommittees = function(name) {
   var header = '<h3>'+name+' is a Member of <strong>'+ committees.length + '</strong> Committees</h3>';
   $('#committees').prepend(header);
   
-  
-  console.log(committees.length);
-
   //bind committee hovers
   $('.committee').on('click', function(e) {
     $('.committee').removeClass('selected');

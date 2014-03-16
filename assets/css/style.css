@@ -192,7 +192,7 @@ body {
 }
 
 .legislator-inner {
-  background: #AAA;
+  background: #CCC;
   min-height: 110px;
   height:auto;
   overflow: hidden;
@@ -205,7 +205,7 @@ body {
 }
 
 .legislator-inner-party-border {
-  border-bottom: 5px solid #AAA;
+  border-bottom: 5px solid #FFF;
 };
 
 .legislator-inner:hover {
@@ -222,7 +222,7 @@ body {
 
 .legislator h5 {
   margin-top:4px;
-  color:#CCC;
+  color:#5C5C5C;
 }
 
 .legislator .media-heading {
