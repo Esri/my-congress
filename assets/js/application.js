@@ -76,9 +76,17 @@ App.prototype.initMap = function() {
       outFields: ["*"]
     });
 
+    self.states = new FeatureLayer("http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0", {
+      mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
+      outFields: ["STATE_ABBR"],
+      opacity:0
+    })
+
+    self.map.addLayer(self.states);
     self.map.addLayer(self.featureLayerGen);
     self.map.addLayer(self.featureLayer);
     self.map.addLayer(self.placeNames);
+
 
     self.featureLayerGen.on('update-end', function(obj) {
       var style = self._getMapStyle();
@@ -217,6 +225,7 @@ App.prototype._featureSelected = function(graphicJson, type) {
 
   //set selected graphic on the app
   if ( type === "click" ) {
+    this._removeSelectedState();
     this.selectedGraphic = graphicJson;
     this._setMapExtent();
   }
@@ -264,6 +273,45 @@ App.prototype._selectDistrict = function(district, state) {
 
 
 /*
+*
+*
+*
+*/
+App.prototype._selectState = function(state) {
+  var self = this;
+
+  $.each(this.states.graphics, function(i, s) {
+    if ( s.attributes.STATE_ABBR === state ) {
+
+      self._removeSelectedFeature('mouse-over');
+      self._removeSelectedFeature();
+      self._removeSelectedState();
+      self.selectedGraphic = s;
+      self._setMapExtent();
+
+      var graphic = {};
+      graphic.geometry = s.geometry;
+      graphic.symbol = {};
+      graphic.attributes = { id: "stateSelected" }
+
+      graphic.symbol = {
+        "color":[255,255,255,64],"outline":{"color":[255,255,255,255],
+        "width":0.8,"type":"esriSLS","style":"esriSLSSolid"},
+        "type":"esriSFS","style":"esriSFSSolid"
+      };
+
+
+      var g = new esri.Graphic( graphic );
+      
+      //add to map
+      self.map.graphics.add( g );
+    }
+  });
+
+}
+
+
+/*
 * Remove selected polygon
 *
 */
@@ -288,6 +336,20 @@ App.prototype._removeSelectedFeature = function(type) {
       }
     });
   }
+
+}
+
+
+App.prototype._removeSelectedState = function() {
+  var self = this;
+
+  $.each(this.map.graphics.graphics, function(index,gra){
+    if (gra) {
+      if(gra.attributes && gra.attributes.id === "stateSelected"){
+        self.map.graphics.remove( gra );
+      }
+    }
+  });
 
 }
 
@@ -647,6 +709,8 @@ App.prototype._getLegByName = function(name) {
         //highlight map
         if ( rep.district ) { 
           self._selectDistrict( rep.district, rep.state ); 
+        } else {
+          self._selectState( rep.state );
         }
 
         //Update UI
@@ -654,7 +718,8 @@ App.prototype._getLegByName = function(name) {
         $($('.legislator')[ 0 ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
         $($('.legislator')[ 0 ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
         $($('.legislator')[ 0 ]).find('.state-name').html(rep.state_name);
-        $($('.legislator')[ 0 ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "" );
+        $($('.legislator')[ 0 ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : rep.district );
+        $($('.legislator')[ 0 ]).find('.rank-title').html( (rep.state_rank) ? "State Rank" : "District" );
         $($('.legislator')[ 0 ]).show();
       }
 
