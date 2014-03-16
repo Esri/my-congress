@@ -321,7 +321,7 @@ App.prototype._getAllLegNames = function() {
 
   //sunlight api lookup
   $.getJSON(url, function(data) {
-    console.log(data);
+    //console.log(data);
     //save array of all leg for later use
     self.allLegislators = data.results;
 
@@ -571,7 +571,7 @@ App.prototype._getLegByLatLong = function(e) {
 
   //sunlight api lookup
   $.getJSON(url, function(data) {
-    console.log(data);
+    //console.log(data);
     self.committees = {}; //reset committees array
     $('.media-object').show(); //make sure all images are viz
     $('.glyphicon-user').hide();
@@ -639,7 +639,7 @@ App.prototype._getLegByName = function(name) {
   var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
   $.getJSON(url, function(data) {
-    console.log(data);
+    //console.log(data);
     self.committees = {}; //reset committees array
     $('.legislator').hide(); //hide previous selection
     $('.media-object').show(); //make sure all images are viz
@@ -760,7 +760,7 @@ App.prototype._getCommittees = function(rep) {
   this.committees[ member ] = { committees: [] };
   
   $.getJSON(url, function(data) {
-    console.log(data);
+    //console.log(data);
     self.committees[ member ].committees = data.results;
   });
 
@@ -820,7 +820,7 @@ App.prototype._showCommitteeMembers = function(name) {
         $('#committee-members').append(header);
 
         $.each(committee.members, function(i, rep) {
-          console.log(rep);
+          //console.log(rep);
           var face = '<img class="committee-member-photos" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
           $('#committee-members').append( face );
         });
