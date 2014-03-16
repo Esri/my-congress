@@ -590,7 +590,7 @@ App.prototype._getLegByLatLong = function(e) {
       $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
       $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
       $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
-      $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : rep.district );
+      $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank.slice(0,1).toUpperCase() + rep.state_rank.slice(1) : rep.district );
       $($('.legislator')[ i ]).find('.rank-title').html( (rep.state_rank) ? "State Rank" : "District" );
       
       //set bottom border of info card to affiliated party
