@@ -820,11 +820,9 @@ App.prototype._showCommitteeMembers = function(name) {
         $('#committee-members').append(header);
 
         $.each(committee.members, function(i, rep) {
-          //console.log('SHOW MEMBERS HERE', rep);
-          var face = '<img class="committee-member-photos" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name'+"id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
+          var face = '<img class="committee-member-photos" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name+' ['+ rep.legislator.party +' - '+rep.legislator.state+']" id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
           $('#committee-members').append( face );
         });
-
       }
     }
   });
@@ -956,6 +954,8 @@ App.prototype._clearUI = function() {
   $('#committees').empty();
   $('#committee-members').empty();
   $('#bills').empty();
+  $('#pie-chart-votes').empty();
+  $('#pie-chart-party-line').empty();
   $('#committees').hide();
   $('#committees-empty').hide();
   $('#bills-container').hide();
