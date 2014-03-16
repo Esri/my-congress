@@ -209,8 +209,8 @@ body {
 };
 
 .legislator-inner:hover {
-  cursor: pointer;
-  border:1px solid #444;
+  cursor: none;
+  border: 10px solid #444;
   border-bottom: none;
 }
 

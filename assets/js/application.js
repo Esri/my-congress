@@ -595,11 +595,11 @@ App.prototype._getLegByLatLong = function(e) {
       
       //set bottom border of info card to affiliated party
       if(rep.party === "D"){
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #0000FF" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #0000FF" );
       } else if( rep.party === "R") {
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #FF0000" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #FF0000" );
       } else {
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #AAAAAA" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #AAAAAA" );
       }; 
       
       $($('.legislator')[ i ]).show();
