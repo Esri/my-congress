@@ -193,7 +193,7 @@ body {
 
 .legislator-inner {
   background: #AAA;
-  min-height: 85px;
+  min-height: 110px;
   height:auto;
   overflow: hidden;
   padding: 5px;
@@ -229,7 +229,8 @@ body {
   margin-left:0px;
   color:#444;
   margin-top:0px;
-  font-weight: bold;
+  font-weight: 600;
+  padding-bottom: 10px;
 }
 
 .legislator .media {

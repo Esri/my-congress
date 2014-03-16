@@ -595,11 +595,11 @@ App.prototype._getLegByLatLong = function(e) {
       
       //set bottom border of info card to affiliated party
       if(rep.party === "D"){
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #0000FF" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #2171b5" );
       } else if( rep.party === "R") {
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #FF0000" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #cb181d" );
       } else {
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #AAAAAA" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 8px #FFF" );
       }; 
       
       $($('.legislator')[ i ]).show();
@@ -663,11 +663,11 @@ App.prototype._getLegByName = function(name) {
         
         //set bottom border of info card to affiliated party
         if(rep.party === "D"){
-          $($('.legislator')[ 0 ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #0000FF" );
+          $($('.legislator')[ 0 ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #2171b5" );
         } else if( rep.party === "R") {
-          $($('.legislator')[ 0 ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #FF0000" );
+          $($('.legislator')[ 0 ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #cb181d" );
         } else {
-          $($('.legislator')[ 0 ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #AAAAAA" );
+          $($('.legislator')[ 0 ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #FFF" );
         }; 
         
         $($('.legislator')[ 0 ]).show();
@@ -722,11 +722,11 @@ App.prototype._getLegByZipcode = function(zipcode) {
       
       //set bottom border of info card to affiliated party
       if(rep.party === "D"){
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #0000FF" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #2171b5" );
       } else if( rep.party === "R") {
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #FF0000" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #cb181d" );
       } else {
-        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #AAAAAA" );
+        $($('.legislator')[ i ]).find('.legislator-inner-party-border').css( "border-bottom", "solid 10px #FFF" );
       }; 
       
       $($('.legislator')[ i ]).show();
@@ -780,14 +780,17 @@ App.prototype._showCommittees = function(name) {
   this._clearUI();
   $('#committees').show().height('400px');
 
-  var header = '<h3>Committees '+name+' is Member of</h3>';
-  $('#committees').append(header);
-
   var committees = this.committees[ name.replace(/ /g, '') ].committees;
   $.each(committees, function(i, committee) {
     var cmte = '<div class="committee" title="'+committee.name+'">'+committee.name+' ('+committee.chamber+')</div>';
     $('#committees').append(cmte);
   });
+  
+  var header = '<h3>'+name+' is a Member of <strong>'+ committees.length + '</strong> Committees</h3>';
+  $('#committees').prepend(header);
+  
+  
+  console.log(committees.length);
 
   //bind committee hovers
   $('.committee').on('click', function(e) {
