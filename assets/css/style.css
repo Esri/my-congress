@@ -204,6 +204,10 @@ body {
   border-bottom: none;
 }
 
+.legislator-inner-party-border {
+  border-bottom: 5px solid #AAA;
+};
+
 .legislator-inner:hover {
   cursor: pointer;
   border:1px solid #444;
