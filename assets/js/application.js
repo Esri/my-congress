@@ -820,7 +820,14 @@ App.prototype._showCommitteeMembers = function(name) {
         $('#committee-members').append(header);
 
         $.each(committee.members, function(i, rep) {
-          var face = '<img class="committee-member-photos" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name+' ['+ rep.legislator.party +' - '+rep.legislator.state+']" id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
+          var face;
+          if(rep.legislator.party === 'D'){
+            face = '<img class="committee-member-photos committee-member-photos-dem" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name+' ['+ rep.legislator.party +' - '+rep.legislator.state+']" id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';
+          } else if (rep.legislator.party === 'R'){
+            face = '<img class="committee-member-photos committee-member-photos-rep" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name+' ['+ rep.legislator.party +' - '+rep.legislator.state+']" id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';           
+          } else {
+            face = '<img class="committee-member-photos committee-member-photos-ind" data-toggle="tooltip" data-placement="top" title="'+rep.legislator.first_name +' '+ rep.legislator.last_name+' ['+ rep.legislator.party +' - '+rep.legislator.state+']" id="'+rep.legislator.first_name +' '+ rep.legislator.last_name+'" src="assets/images/'+rep.legislator.bioguide_id+'.jpg"></img>';            
+          }
           $('#committee-members').append( face );
         });
       }
