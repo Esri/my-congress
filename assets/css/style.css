@@ -192,21 +192,25 @@ body {
 }
 
 .legislator-inner {
-  background: #f8f8f8;
-  min-height: 85px;
+  background: #CCC;
+  min-height: 120px;
   height:auto;
   overflow: hidden;
   padding: 5px;
   margin-left: -12px;
   margin-right: -12px;
   padding-top: 1px;
-  border:1px solid #CCC;
-  border-bottom: none;
+  border:2px solid #FFF;
+  cursor: pointer;
 }
 
+.legislator-inner-party-border {
+  border-bottom: 5px solid #FFF;
+};
+
 .legislator-inner:hover {
-  cursor: pointer;
-  border:1px solid #444;
+  cursor: none;
+  border: 10px solid #444;
   border-bottom: none;
 }
 
@@ -218,14 +222,15 @@ body {
 
 .legislator h5 {
   margin-top:4px;
-  color:#CCC;
+  color:#5C5C5C;
 }
 
 .legislator .media-heading {
   margin-left:0px;
   color:#444;
   margin-top:0px;
-  font-weight: bold;
+  font-weight: 600;
+  padding-bottom: 10px;
 }
 
 .legislator .media {
@@ -367,8 +372,8 @@ body {
 }
 
 .pie-text {
-  font-size:7pt;
-  color:#FFF;
+  font-size:12px;
+  color:#FFF !Important;
 }
 
 #committees {
@@ -394,6 +399,7 @@ body {
 
 .committee {
   cursor: pointer;
+  border-bottom: dashed 1px #AAA;
 }
 
 .committee.selected {
@@ -411,12 +417,24 @@ body {
 }
 
 .committee-member-photos {
-  border:1px solid #F8f8f8;
+  border:4px solid #F8f8f8;
+}
+
+.committee-member-photos-rep {
+  border:4px solid #cb181d;
+}
+
+.committee-member-photos-dem {
+  border:4px solid #2171b5;
+}
+
+.committee-member-photos-ind {
+  border:4px solid #AAA;
 }
 
 .committee-member-photos:hover {
   cursor: pointer;
-  border:1px solid #444;
+  border:4px solid #444;
   -webkit-transition: all 1s ease-in-out;
   -moz-transition: all 1s ease-in-out;
   -o-transition: all 1s ease-in-out;
@@ -427,6 +445,7 @@ body {
 #bills-container {
   display: none;
   overflow: hidden;
+  margin-top: 60px;
 }
 
 #bills {
