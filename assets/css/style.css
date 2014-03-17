@@ -193,7 +193,7 @@ body {
 
 .legislator-inner {
   background: #CCC;
-  min-height: 110px;
+  min-height: 120px;
   height:auto;
   overflow: hidden;
   padding: 5px;
@@ -372,8 +372,8 @@ body {
 }
 
 .pie-text {
-  font-size:7pt;
-  color:#FFF;
+  font-size:12px;
+  color:#FFF !Important;
 }
 
 #committees {
@@ -445,6 +445,7 @@ body {
 #bills-container {
   display: none;
   overflow: hidden;
+  margin-top: 60px;
 }
 
 #bills {

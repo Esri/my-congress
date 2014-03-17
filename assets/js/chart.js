@@ -1,11 +1,11 @@
 App.prototype._pieChart = function( votes ) {
   
-  var width = 100,
-      height = 100,
+  var width = 150,
+      height = 150,
       radius = Math.min(width, height) / 2;
 
   var color = d3.scale.ordinal()
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+      .range(["#A6A48B", "#938BA6", "#A0AED9", "#666556", "#FFB90A", "#d0743c", "#ff8c00"]);
 
   var arc = d3.svg.arc()
       .outerRadius(radius - 10)
@@ -54,13 +54,12 @@ App.prototype._pieChart = function( votes ) {
 App.prototype._partyLinePie = function() {
   var self = this;
 
-  var width = 100,
-      height = 100,
+  var width = 150,
+      height = 150,
       radius = Math.min(width, height) / 2;
 
   var color = d3.scale.ordinal()
-      .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
-
+      .range(["#938BA6", "#A6A48B", "#A0AED9", "#666556", "#FFB90A", "#d0743c", "#ff8c00"]);
   var arc = d3.svg.arc()
       .outerRadius(radius - 10)
       .innerRadius(0);
