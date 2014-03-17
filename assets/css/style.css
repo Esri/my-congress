@@ -346,11 +346,7 @@ body {
 }
 
 #telephone {
-  border-right:1px solid #777;
-}
-
-#online-contact, #telephone {
-  margin:0px;
+  margin-top: -5px;
 }
 
 #last-50 .col-md-3 {
@@ -478,6 +474,75 @@ body {
 
 .Failed {
   color:#d53f27;
+}
+
+.contactIcons {
+  margin-top: 3px;
+}
+
+.icon-homepage {
+  background-image: url('../images/icons/icon-home.png');
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.icon-homepage:hover {
+  background-image: url('../images/icons/icon-home-hover.png');
+}
+
+.icon-email {
+  background-image: url('../images/icons/icon-email.png');
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.icon-email:hover {
+  background-image: url('../images/icons/icon-email-hover.png');
+}
+
+.icon-twitter {
+  background-image: url('../images/icons/icon-twitter.png');
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.icon-twitter:hover {
+  background-image: url('../images/icons/icon-twitter-hover.png');
+}
+
+.icon-facebook {
+  background-image: url('../images/icons/icon-facebook.png');
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.icon-facebook:hover {
+  background-image: url('../images/icons/icon-facebook-hover.png');
+}
+
+.icon-youtube {
+  background-image: url('../images/icons/icon-youtube.png');
+  height: 16px;
+  width: 16px;
+  display: inline-block;
+  margin-right: 25px;
+  cursor: pointer;
+}
+
+.icon-youtube:hover {
+  background-image: url('../images/icons/icon-youtube-hover.png');
 }
  
 /* LOADER */
