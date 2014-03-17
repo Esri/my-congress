@@ -139,7 +139,7 @@ App.prototype._wire = function() {
   });
 
   //location
-  $('#location-btn').on('click', function(e) {
+  $('#location-btn').on('click touchstart', function(e) {
     $(this).toggleClass('btn-primary');
     if ( $(this).hasClass('btn-primary') ) {
       self._getLocation();
@@ -147,7 +147,7 @@ App.prototype._wire = function() {
   });
 
   //map events
-  this.map.on('click', function(e) {
+  this.map.on('click touchstart', function(e) {
     self._getLegByLatLong(e);
   });
 
@@ -179,7 +179,7 @@ App.prototype._wire = function() {
   });
 
   //bind legislator name click for GET committees
-  $('.legislator').on('click', function(e) {
+  $('.legislator').on('click touchstart', function(e) {
     var name = $(this).find('.media-heading').html();
     
     $('.legislator-inner').removeClass('selected');
@@ -900,7 +900,7 @@ App.prototype._showCommittees = function(name) {
   $('#committees').prepend(header);
   
   //bind committee hovers
-  $('.committee').on('click', function(e) {
+  $('.committee').on('click touchstart', function(e) {
     $('.committee').removeClass('selected');
     $(this).addClass('selected');
     var id = $(this).attr('title');
@@ -945,7 +945,7 @@ App.prototype._showCommitteeMembers = function(name) {
   });
   $('#committees').css({'height': '125px'});
   $('.committee-member-photos').tooltip();
-  $('.committee-member-photos').on('click', function(e) {
+  $('.committee-member-photos').on('click touchstart', function(e) {
     $('#pie-chart-votes').empty();
     $('#pie-chart-party-line').empty();
     
