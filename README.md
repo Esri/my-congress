@@ -5,6 +5,8 @@ my-congress
 
 The my-congress project is a quick-turnaround development project aimed at building a focused app that makes it easy for citizens to discover and learn about their elected representatives.  The app is a refined and updated version of a demo app available [here] (http://107.20.167.42/congress/)
 
+View in-progress work [here] (http://arcgis.github.io/my-congress/). Note the view it now link may not reflect the latest state of the application.
+
 ### Functional Capabilities
 - A user needs to discover information about the elected officials in a given congressional district
 - A user can select a congressional district or can enter an address, zip code, etc. to locate a given district
