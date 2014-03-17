@@ -918,6 +918,9 @@ App.prototype._showCommitteeMembers = function(name) {
   $('#committees').css({'height': '125px'});
   $('.committee-member-photos').tooltip();
   $('.committee-member-photos').on('click', function(e) {
+    $('#pie-chart-votes').empty();
+    $('#pie-chart-party-line').empty();
+    
     var id = e.target.id;
     self._getLegByName( id );
   });
