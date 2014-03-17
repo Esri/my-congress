@@ -489,6 +489,10 @@ body {
   cursor: pointer;
 }
 
+.icon-homepage:hover {
+  background-image: url('../images/icons/icon-home-hover.png');
+}
+
 .icon-email {
   background-image: url('../images/icons/icon-email.png');
   height: 16px;
@@ -496,6 +500,10 @@ body {
   display: inline-block;
   margin-right: 25px;
   cursor: pointer;
+}
+
+.icon-email:hover {
+  background-image: url('../images/icons/icon-email-hover.png');
 }
 
 .icon-twitter {
@@ -507,6 +515,10 @@ body {
   cursor: pointer;
 }
 
+.icon-twitter:hover {
+  background-image: url('../images/icons/icon-twitter-hover.png');
+}
+
 .icon-facebook {
   background-image: url('../images/icons/icon-facebook.png');
   height: 16px;
@@ -516,6 +528,10 @@ body {
   cursor: pointer;
 }
 
+.icon-facebook:hover {
+  background-image: url('../images/icons/icon-facebook-hover.png');
+}
+
 .icon-youtube {
   background-image: url('../images/icons/icon-youtube.png');
   height: 16px;
@@ -523,6 +539,10 @@ body {
   display: inline-block;
   margin-right: 25px;
   cursor: pointer;
+}
+
+.icon-youtube:hover {
+  background-image: url('../images/icons/icon-youtube-hover.png');
 }
  
 /* LOADER */
