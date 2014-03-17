@@ -23,6 +23,7 @@ var App = function(){
 
   //init map
   this.initMap();
+
 };
 
 
@@ -108,7 +109,15 @@ App.prototype.initMap = function() {
 
 }
 
+App.prototype._getLocation = function() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(this._showPosition);
+  }
+}
 
+App.prototype._showPosition = function(position) {
+  app._getLegByLatLong( position.coords );
+}
 
 /*
 * Wire events within map
@@ -127,6 +136,14 @@ App.prototype._wire = function() {
     $('#map').css('height', height+'px');
     $('#congress-seal').css('margin-left', (width / 2) - 25 + 'px');
 
+  });
+
+  //location
+  $('#location-btn').on('click', function(e) {
+    $(this).toggleClass('btn-primary');
+    if ( $(this).hasClass('btn-primary') ) {
+      self._getLocation();
+    }
   });
 
   //map events
@@ -627,9 +644,15 @@ App.prototype._getLegByLatLong = function(e) {
     
   this._clearUI();
 
-  var mapPoint = e.mapPoint;
-  var lon = mapPoint.getLongitude().toFixed(2);
-  var lat = mapPoint.getLatitude().toFixed(2);
+  var lat, lon;
+  if ( e.mapPoint ) {
+    var mapPoint = e.mapPoint;
+    lon = mapPoint.getLongitude().toFixed(2);
+    lat = mapPoint.getLatitude().toFixed(2);
+  } else {
+    lat = e.latitude;
+    lon = e.longitude;
+  }
 
   var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude="+lat+"&longitude="+lon+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
