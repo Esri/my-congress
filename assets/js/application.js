@@ -265,7 +265,6 @@ App.prototype._selectDistrict = function(district, state) {
     }
   });
   this._featureSelected(g, 'click');
-
 }
 
 
@@ -953,11 +952,22 @@ App.prototype._showMemberDetails = function(name) {
       $('#member-details').fadeIn();
       $('#address').html(leg.office);
       $('#telephone').html(leg.phone);
+      
       $('.icon-homepage').attr("href", leg.website);
+      $('.icon-homepage').attr("target", "_blank");
+      
       $('.icon-twitter').attr("href", "http://www.twitter.com/"+leg.twitter_id);
+      $('.icon-twitter').attr("target", "_blank");
+      
       $('.icon-facebook').attr("href", "http://www.facebook.com/"+leg.facebook_id);
+      $('.icon-facebook').attr("target", "_blank");
+      
       $('.icon-youtube').attr("href", "http://www.youtube.com/"+leg.youtube_id);
+      $('.icon-youtube').attr("target", "_blank");
+      
       $('.icon-email').attr("href", leg.contact_form);
+      $('.icon-email').attr("target", "_blank");
+      
       self._getVotesById(leg.bioguide_id);
     }
   });
