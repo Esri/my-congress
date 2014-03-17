@@ -164,6 +164,10 @@ App.prototype._wire = function() {
   //bind legislator name click for GET committees
   $('.legislator').on('click', function(e) {
     var name = $(this).find('.media-heading').html();
+    
+    $('.legislator-inner').removeClass('selected');
+    $(this).find('.legislator-inner').addClass('selected');
+
     self._showMemberDetails(name);
     self._showCommittees(name.split('.')[1]);
   });
@@ -669,8 +673,13 @@ App.prototype._getLegByLatLong = function(e) {
         $(this).parent().parent().find('.glyphicon-user').show();
         $(this).unbind("error").hide(); //attr("src", "broken.gif");
       });
-
+    
     });
+    
+    //select first rep
+    setTimeout(function() {
+      $($('.legislator')[0]).trigger('click');
+    },1000);
 
   });
 
@@ -743,6 +752,11 @@ App.prototype._getLegByName = function(name) {
 
     });
 
+    //select first rep
+    setTimeout(function() {
+      $($('.legislator')[0]).trigger('click');
+    },1000);
+
   });
   
 };
@@ -781,7 +795,8 @@ App.prototype._getLegByZipcode = function(zipcode) {
       $($('.legislator')[ i ]).find('.media-object').attr('src', 'assets/images/'+rep.bioguide_id+'.jpg');
       $($('.legislator')[ i ]).find('.media-heading').html('['+rep.party+'] '+ rep.title + '. ' + rep.first_name + ' ' + rep.last_name);
       $($('.legislator')[ i ]).find('.state-name').html(rep.state_name);
-      $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank : "" );
+      $($('.legislator')[ i ]).find('.rank-name').html( (rep.state_rank) ? rep.state_rank.slice(0,1).toUpperCase() + rep.state_rank.slice(1) : rep.district );
+      $($('.legislator')[ i ]).find('.rank-title').html( (rep.state_rank) ? "State Rank" : "District" );
       
       //set bottom border of info card to affiliated party
       if(rep.party === "D"){
@@ -797,7 +812,11 @@ App.prototype._getLegByZipcode = function(zipcode) {
     });
 
   });
-
+  
+  //select first rep
+  setTimeout(function() {
+    $($('.legislator')[0]).trigger('click');
+  },1000);
   
 };
 
@@ -925,7 +944,11 @@ App.prototype._showMemberDetails = function(name) {
       $('#member-details').fadeIn();
       $('#address').html(leg.office);
       $('#telephone').html(leg.phone);
-      $('#online-contact').html("<a href="+leg.contact_form+">Contact</a>");
+      $('.icon-homepage').attr("href", leg.website);
+      $('.icon-twitter').attr("href", "http://www.twitter.com/"+leg.twitter_id);
+      $('.icon-facebook').attr("href", "http://www.facebook.com/"+leg.facebook_id);
+      $('.icon-youtube').attr("href", "http://www.youtube.com/"+leg.youtube_id);
+      $('.icon-email').attr("href", leg.contact_form);
       self._getVotesById(leg.bioguide_id);
     }
   });
