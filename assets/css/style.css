@@ -38,6 +38,16 @@ body {
   max-width: 500px;
 }
 
+.form-group {
+  position: relative;
+}
+
+#location-btn {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+}
+
 /*
 * Map
 *
