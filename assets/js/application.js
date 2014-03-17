@@ -623,6 +623,9 @@ App.prototype._getLegByLatLong = function(e) {
   $('#col-left').fadeOut();
   $('#committees').hide();
   $('#committees-empty').hide();
+  $('#pie-chart-votes').empty();
+  $('#pie-chart-party-line').empty();
+    
   this._clearUI();
 
   var mapPoint = e.mapPoint;
@@ -699,6 +702,9 @@ App.prototype._getLegByName = function(name) {
   $('#col-left').fadeOut();
   $('#committees').hide();
   $('#committees-empty').hide();
+  $('#pie-chart-votes').empty();
+  $('#pie-chart-party-line').empty();
+  
   this._clearUI();
 
   var first_name = name.split(' ')[ 0 ];
@@ -940,7 +946,7 @@ App.prototype._showMemberDetails = function(name) {
 
   $('#col-left').show();
   $('#member-name').html(name);
-
+  
   $.each(this.allLegislators, function(i, leg) {
     var n = name.split('.')[1].split(' ');
     if ( leg.first_name === n[1] && leg.last_name === n[2]) {
@@ -979,7 +985,10 @@ App.prototype._getVotesById = function(id) {
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0};
   self.partyLine = {"with": 0, "against": 0};
 
-  $.getJSON(url, function(data) {
+  if (self.voteRequest !== undefined ) {
+    self.voteRequest.abort();
+  }
+  self.voteRequest = $.getJSON(url, function(data) {
     //console.log('data', data);
     
     $.each(data.results, function(i, res) {
@@ -1013,6 +1022,8 @@ App.prototype._getVotesById = function(id) {
       };
     });
     
+    $('#pie-chart-votes').empty();
+    $('#pie-chart-party-line').empty();
     self._partyLinePie();
     self._pieChart(votes);
 
