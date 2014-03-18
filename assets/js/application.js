@@ -652,7 +652,7 @@ App.prototype._getLegByLatLong = function(e) {
   } else {
     lat = e.latitude;
     lon = e.longitude;
-  }
+  };
 
   var url = "https://congress.api.sunlightfoundation.com/legislators/locate?latitude="+lat+"&longitude="+lon+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
 
@@ -660,12 +660,23 @@ App.prototype._getLegByLatLong = function(e) {
 
   //sunlight api lookup
   $.getJSON(url, function(data) {
-    //console.log(data);
+    
+    var leg_ordered_arr = [];
+    $.each(data.results, function(i, rep ) {
+      if(rep.chamber === 'house'){
+        leg_ordered_arr[0] = rep;
+      } else if (rep.chamber === 'senate' && rep.state_rank === 'junior') {
+        leg_ordered_arr[1] = rep;
+      } else {
+        leg_ordered_arr[2] = rep;
+      }
+    });
+    
     self.committees = {}; //reset committees array
     $('.media-object').show(); //make sure all images are viz
     $('.glyphicon-user').hide();
 
-    $.each(data.results, function(i, rep) {
+    $.each(leg_ordered_arr, function(i, rep) {  
 
       //highlight map
       if ( rep.district ) { 
@@ -737,12 +748,24 @@ App.prototype._getLegByName = function(name) {
 
   $.getJSON(url, function(data) {
     //console.log(data);
+    
+    var leg_ordered_arr = [];
+    $.each(data.results, function(i, rep ) {
+      if(rep.chamber === 'house'){
+        leg_ordered_arr[0] = rep;
+      } else if (rep.chamber === 'senate' && rep.state_rank === 'junior') {
+        leg_ordered_arr[1] = rep;
+      } else {
+        leg_ordered_arr[2] = rep;
+      }
+    });
+    
     self.committees = {}; //reset committees array
     $('.legislator').hide(); //hide previous selection
     $('.media-object').show(); //make sure all images are viz
     $('.glyphicon-user').hide();
 
-    $.each(data.results, function(i, rep) {
+    $.each(leg_ordered_arr, function(i, rep) {
       if ( rep.last_name === last_name ) {
         self._getCommittees(rep);
         
@@ -809,9 +832,20 @@ App.prototype._getLegByZipcode = function(zipcode) {
   $.getJSON(url, function(data) {
     self.committees = {}; //reset committees array
     $('.legislator').hide(); //hide previous selection
+    
+    var leg_ordered_arr = [];
+    $.each(data.results, function(i, rep ) {
+      if(rep.chamber === 'house'){
+        leg_ordered_arr[0] = rep;
+      } else if (rep.chamber === 'senate' && rep.state_rank === 'junior') {
+        leg_ordered_arr[1] = rep;
+      } else {
+        leg_ordered_arr[2] = rep;
+      }
+    });
 
-    $.each(data.results, function(i, rep) {
-
+    $.each(leg_ordered_arr, function(i, rep) {
+      
       //highlight map
       if ( rep.district ) { 
         self._selectDistrict( rep.district, rep.state ); 
