@@ -731,33 +731,46 @@ App.prototype._getLegByLatLong = function(e) {
 */ 
 App.prototype._getLegByName = function(name) {
   var self = this;
-
+  
   $('#col-left').fadeOut();
   $('#committees').hide();
   $('#committees-empty').hide();
-  //$('#pie-chart-votes').empty();
-  //$('#pie-chart-party-line').empty();
+  $('#pie-chart-votes').empty();
+  $('#pie-chart-party-line').empty();
   
   this._clearUI();
 
   var first_name = name.split(' ')[ 0 ];
   var last_name = name.split(' ')[ 1 ];
 
+  
+  
+  
   //sunlight api lookup by NAME
-  var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
-
+  //var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  
+  //IF THIS RESULT RETURNS > 1 VALUE THE METHOD FAILS TO GET COMMITTEE INFO
+  //UPDATED THE QUERY CALL TO INCLUDE FIRST NAME + LAST NAME
+  //STILL NEED TO DEAL WITH A CONDITION WHERE MORE THAN ONE MEMBER HAS THE EXACT SAME NAME -- GO WITH THE ODDS FOR THE DEMO TODAY
+  
+  var url = "https://congress.api.sunlightfoundation.com/legislators?first_name="+first_name+"&last_name="+last_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  
   $.getJSON(url, function(data) {
-    //console.log(data);
     
     var leg_ordered_arr = [];
     $.each(data.results, function(i, rep ) {
-      if(rep.chamber === 'house'){
+      if(data.results > 1){
+        if(rep.chamber === 'house'){
         leg_ordered_arr[0] = rep;
-      } else if (rep.chamber === 'senate' && rep.state_rank === 'junior') {
-        leg_ordered_arr[1] = rep;
+        } else if (rep.chamber === 'senate' && rep.state_rank === 'junior') {
+          leg_ordered_arr[1] = rep;
+        } else {
+          leg_ordered_arr[2] = rep;
+        }
       } else {
-        leg_ordered_arr[2] = rep;
+        leg_ordered_arr.push(data.results[0]);
       }
+      
     });
     
     self.committees = {}; //reset committees array
@@ -980,18 +993,16 @@ App.prototype._showCommitteeMembers = function(name) {
   $('#committees').css({'height': '125px'});
   $('.committee-member-photos').tooltip();
   $('.committee-member-photos').on('click', function(e) {
-    //$('#pie-chart-votes').empty();
-    //$('#pie-chart-party-line').empty();
+    $('#pie-chart-votes').empty();
+    $('#pie-chart-party-line').empty();
     var id = e.target.id;
     self._getLegByName( id );
   });
-  
   
   $("img").error(function () {
         $(this).parent().parent().find('.glyphicon-user').show();
         $(this).unbind("error").hide(); //attr("src", "broken.gif");
   });
-
 } 
 
 
