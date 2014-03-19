@@ -735,8 +735,8 @@ App.prototype._getLegByName = function(name) {
   $('#col-left').fadeOut();
   $('#committees').hide();
   $('#committees-empty').hide();
-  $('#pie-chart-votes').empty();
-  $('#pie-chart-party-line').empty();
+  //$('#pie-chart-votes').empty();
+  //$('#pie-chart-party-line').empty();
   
   this._clearUI();
 
@@ -980,11 +980,16 @@ App.prototype._showCommitteeMembers = function(name) {
   $('#committees').css({'height': '125px'});
   $('.committee-member-photos').tooltip();
   $('.committee-member-photos').on('click', function(e) {
-    $('#pie-chart-votes').empty();
-    $('#pie-chart-party-line').empty();
-    
+    //$('#pie-chart-votes').empty();
+    //$('#pie-chart-party-line').empty();
     var id = e.target.id;
     self._getLegByName( id );
+  });
+  
+  
+  $("img").error(function () {
+        $(this).parent().parent().find('.glyphicon-user').show();
+        $(this).unbind("error").hide(); //attr("src", "broken.gif");
   });
 
 } 
@@ -1025,7 +1030,7 @@ App.prototype._showMemberDetails = function(name) {
       $('.icon-email').attr("href", leg.contact_form);
       $('.icon-email').attr("target", "_blank");
       
-      self._getVotesById(leg.bioguide_id);
+      //self._getVotesById(leg.bioguide_id);
     }
   });
 
@@ -1043,8 +1048,8 @@ App.prototype._showMemberDetails = function(name) {
 App.prototype._getVotesById = function(id) {
   var self = this;
 
-  $('#voting-record').hide();
-  $('.voting-loader').show();
+  //$('#voting-record').hide();
+  //$('.voting-loader').show();
 
   //get vote history for selected member
   var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total,breakdown.party"
