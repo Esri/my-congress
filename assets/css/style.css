@@ -574,6 +574,8 @@ body {
   text-align: center;
   color:#CCC;
   margin-top:5px !important;
+  /* HIDING LOADER DIV */
+ display: none;
 }
 
 @-webkit-keyframes expand {
@@ -638,6 +640,8 @@ body {
   box-shadow: 0 0 0 6.66667px #141414;
   width: 40px;
   height: 40px;
+  /* HIDING LOADER DIV */
+ display: none;
 }
 .loader:before, .loader:after {
   content: "";
