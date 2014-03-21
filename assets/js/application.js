@@ -746,13 +746,7 @@ App.prototype._getLegByName = function(name) {
   
   
   
-  //sunlight api lookup by NAME
-  //var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
-  
-  //IF THIS RESULT RETURNS > 1 VALUE THE METHOD FAILS TO GET COMMITTEE INFO
-  //UPDATED THE QUERY CALL TO INCLUDE FIRST NAME + LAST NAME
-  //STILL NEED TO DEAL WITH A CONDITION WHERE MORE THAN ONE MEMBER HAS THE EXACT SAME NAME -- GO WITH THE ODDS FOR THE DEMO TODAY
-  
+  //sunlight api lookup by FIRST NAME & LAST NAME
   var url = "https://congress.api.sunlightfoundation.com/legislators?first_name="+first_name+"&last_name="+last_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
   
   $.getJSON(url, function(data) {
@@ -1041,7 +1035,7 @@ App.prototype._showMemberDetails = function(name) {
       $('.icon-email').attr("href", leg.contact_form);
       $('.icon-email').attr("target", "_blank");
       
-      //self._getVotesById(leg.bioguide_id);
+      self._getVotesById(leg.bioguide_id);
     }
   });
 
@@ -1059,20 +1053,19 @@ App.prototype._showMemberDetails = function(name) {
 App.prototype._getVotesById = function(id) {
   var self = this;
 
-  //$('#voting-record').hide();
-  //$('.voting-loader').show();
+  $('#voting-record').hide();
+  $('.voting-loader').show();
 
   //get vote history for selected member
   var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total,breakdown.party"
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0};
-  self.partyLine = {"with": 0, "against": 0};
+  self.partyLine = {"With": 0, "Against": 0};
 
   if (self.voteRequest !== undefined ) {
     self.voteRequest.abort();
   }
   self.voteRequest = $.getJSON(url, function(data) {
-    //console.log('data', data);
     
     $.each(data.results, function(i, res) {
       for ( var voter in res.voters ) {
