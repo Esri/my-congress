@@ -1060,7 +1060,7 @@ App.prototype._getVotesById = function(id) {
   var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total,breakdown.party"
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0};
-  self.partyLine = {"With": 0, "Against": 0};
+  self.partyLine = {"with": 0, "against": 0};
 
   if (self.voteRequest !== undefined ) {
     self.voteRequest.abort();
