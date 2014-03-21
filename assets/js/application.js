@@ -1121,9 +1121,9 @@ App.prototype._getPartyLine = function(voter, res) {
   var partyline = ( res.breakdown.party[ party ].Yea > res.breakdown.party[ party ].Nay ) ? "Yea" : "Nay";
   
   if ( voted === partyline ) {
-    this.partyLine['with']++;
+    this.partyLine['With']++;
   } else {
-    this.partyLine['against']++;
+    this.partyLine['Against']++;
   }
 }
 
