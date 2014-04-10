@@ -1016,6 +1016,7 @@ App.prototype._showMemberDetails = function(name) {
   $.each(this.allLegislators, function(i, leg) {
     var n = name.split('.')[1].split(' ');
     if ( leg.first_name === n[1] && leg.last_name === n[2]) {
+      self.selectedLeg = leg;
       $('#member-details').fadeIn();
       $('#address').html(leg.office);
       $('#telephone').html(leg.phone);
@@ -1057,7 +1058,7 @@ App.prototype._getVotesById = function(id) {
   $('.voting-loader').show();
 
   //get vote history for selected member
-  var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total,breakdown.party"
+  var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voter_ids,result,bill,breakdown.total,breakdown.party"
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0};
   self.partyLine = {"With": 0, "Against": 0};
@@ -1068,7 +1069,7 @@ App.prototype._getVotesById = function(id) {
   self.voteRequest = $.getJSON(url, function(data) {
     
     $.each(data.results, function(i, res) {
-      for ( var voter in res.voters ) {
+      for ( var voter in res.voter_ids ) {
         if ( voter === id ) {
           if (res.breakdown.party) {
             self._getPartyLine(voter, res);
@@ -1082,7 +1083,7 @@ App.prototype._getVotesById = function(id) {
                 <div class="col-md-2 col-sm-2 col-xs-2">Yea: <span>'+res.breakdown.total.Yea+'</span></div>\
                 <div class="col-md-2 col-sm-2 col-xs-2">Nay: <span>'+res.breakdown.total.Nay+'</span></div>\
                 <div class="col-md-3 col-sm-3 col-xs-3">Present: <span>'+res.breakdown.total.Present+'</span></div>\
-                <div class="col-md-12 col-sm-12 col-xs-12">How '+res.voters[ voter ].voter.title+'. ' + res.voters[ voter ].voter.first_name + ' ' +res.voters[ voter ].voter.last_name + ' voted: '+ res.voters[ voter ].vote +'</div>\
+                <div class="col-md-12 col-sm-12 col-xs-12">How '+self.selectedLeg.title+'. ' + self.selectedLeg.first_name + ' ' +self.selectedLeg.last_name + ' voted: '+ res.voter_ids[ voter ] +'</div>\
                 <div class="col-md-6 col-sm-6 col-xs-6" id="bill-date">URL: <a href="'+res.bill.urls.congress+'">'+res.bill.urls.congress+'</a></div>\
                 <div class="col-md-6 col-sm-6 col-xs-6">Last Vote At: '+new Date( d ).toLocaleString()+'</div>\
               </div>';
@@ -1090,10 +1091,10 @@ App.prototype._getVotesById = function(id) {
             $('#bills').append(item);
           }
           //tally recent votes!
-          votes[ res.voters[ voter ].vote ]++;
+          votes[ res.voter_ids[ voter ] ]++;
 
-          $('#term-start').html(moment(res.voters[ voter ].voter.term_start).format("MMMM DD, YYYY"));
-          $('#term-end').html(moment(res.voters[ voter ].voter.term_end).format("MMMM DD, YYYY"));
+          $('#term-start').html(moment(self.selectedLeg.term_start).format("MMMM DD, YYYY"));
+          $('#term-end').html(moment(self.selectedLeg.term_end).format("MMMM DD, YYYY"));
         }
       };
     });
@@ -1116,8 +1117,8 @@ App.prototype._getVotesById = function(id) {
 */
 App.prototype._getPartyLine = function(voter, res) {
   var self = this;
-  var voted = res.voters[ voter ].vote;
-  var party = res.voters[ voter ].voter.party;
+  var voted = res.voter_ids[ voter ];
+  var party = self.selectedLeg.party;
   var partyline = ( res.breakdown.party[ party ].Yea > res.breakdown.party[ party ].Nay ) ? "Yea" : "Nay";
   
   if ( voted === partyline ) {
