@@ -731,7 +731,7 @@ App.prototype._getLegByLatLong = function(e) {
 */ 
 App.prototype._getLegByName = function(name) {
   var self = this;
-
+  
   $('#col-left').fadeOut();
   $('#committees').hide();
   $('#committees-empty').hide();
@@ -743,21 +743,28 @@ App.prototype._getLegByName = function(name) {
   var first_name = name.split(' ')[ 0 ];
   var last_name = name.split(' ')[ 1 ];
 
-  //sunlight api lookup by NAME
-  var url = "https://congress.api.sunlightfoundation.com/legislators?query="+first_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
-
+  
+  
+  
+  //sunlight api lookup by FIRST NAME & LAST NAME
+  var url = "https://congress.api.sunlightfoundation.com/legislators?first_name="+first_name+"&last_name="+last_name+"&apikey=88036ea903bf4dffbbdc4a9fa7acb2ad";
+  
   $.getJSON(url, function(data) {
-    //console.log(data);
     
     var leg_ordered_arr = [];
     $.each(data.results, function(i, rep ) {
-      if(rep.chamber === 'house'){
+      if(data.results > 1){
+        if(rep.chamber === 'house'){
         leg_ordered_arr[0] = rep;
-      } else if (rep.chamber === 'senate' && rep.state_rank === 'junior') {
-        leg_ordered_arr[1] = rep;
+        } else if (rep.chamber === 'senate' && rep.state_rank === 'junior') {
+          leg_ordered_arr[1] = rep;
+        } else {
+          leg_ordered_arr[2] = rep;
+        }
       } else {
-        leg_ordered_arr[2] = rep;
+        leg_ordered_arr.push(data.results[0]);
       }
+      
     });
     
     self.committees = {}; //reset committees array
@@ -982,11 +989,14 @@ App.prototype._showCommitteeMembers = function(name) {
   $('.committee-member-photos').on('click', function(e) {
     $('#pie-chart-votes').empty();
     $('#pie-chart-party-line').empty();
-    
     var id = e.target.id;
     self._getLegByName( id );
   });
-
+  
+  $("img").error(function () {
+        $(this).parent().parent().find('.glyphicon-user').show();
+        $(this).unbind("error").hide(); //attr("src", "broken.gif");
+  });
 } 
 
 
@@ -1050,13 +1060,12 @@ App.prototype._getVotesById = function(id) {
   var url = "https://congress.api.sunlightfoundation.com/votes?apikey=88036ea903bf4dffbbdc4a9fa7acb2ad&voter_ids."+id+"__exists=true&per_page=100&fields=voters,result,bill,breakdown.total,breakdown.party"
   
   var votes = {"Yea": 0, "Nay": 0, "Present": 0, "Not Voting": 0};
-  self.partyLine = {"with": 0, "against": 0};
+  self.partyLine = {"With": 0, "Against": 0};
 
   if (self.voteRequest !== undefined ) {
     self.voteRequest.abort();
   }
   self.voteRequest = $.getJSON(url, function(data) {
-    //console.log('data', data);
     
     $.each(data.results, function(i, res) {
       for ( var voter in res.voters ) {
@@ -1112,9 +1121,9 @@ App.prototype._getPartyLine = function(voter, res) {
   var partyline = ( res.breakdown.party[ party ].Yea > res.breakdown.party[ party ].Nay ) ? "Yea" : "Nay";
   
   if ( voted === partyline ) {
-    this.partyLine['with']++;
+    this.partyLine['With']++;
   } else {
-    this.partyLine['against']++;
+    this.partyLine['Against']++;
   }
 }
 
