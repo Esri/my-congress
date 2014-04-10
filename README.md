@@ -28,5 +28,6 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 A copy of the license is available in the repository's [LICENSE.txt](https://github.com/Esri/my-congress/blob/master/LICENSE.txt) file.
 
-[](Esri Tags: Local-Government Local Government Online Apps Parcel Viewer)
+[](Esri Tags: ArcGIS Government Congress App Senate Javascript)
 [](Esri Language: JavaScript)
+
