@@ -13,7 +13,7 @@ Find a bug or want to request a new feature?  Please let us know by submitting a
 
 ## Contributing
 
-Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing][].
+Esri welcomes contributions from anyone and everyone. Please see our Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
 ## Licensing
 
