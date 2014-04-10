@@ -2,6 +2,8 @@
 
 The my-congress project is a quick-turnaround development project aimed at building a focused app that makes it easy for citizens to discover and learn about their elected representatives.
 
+View Application: <a href="http://esri.github.io/my-congress/">My Congress</a>
+
 ![My Congress Splash screen](https://raw.githubusercontent.com/Esri/my-congress/master/my-congress.png)
 
 ## Resources
