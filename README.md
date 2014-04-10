@@ -2,7 +2,7 @@
 
 The my-congress project is a quick-turnaround development project aimed at building a focused app that makes it easy for citizens to discover and learn about their elected representatives.
 
-[![Image of Local Government Online App using the 'Finder' configuration][FinderThumbnail]][FinderPreview] [![Image of Local Government Online App using the 'Find, Edit, and Filter' configuration][FEFThumbnail]][FEFPreview]
+![alt tag](https://raw.githubusercontent.com/ArcGIS/my-congress/master/my-congress.png?token=910495__eyJzY29wZSI6IlJhd0Jsb2I6QXJjR0lTL215LWNvbmdyZXNzL21hc3Rlci9teS1jb25ncmVzcy5wbmciLCJleHBpcmVzIjoxMzk3NzU2MTcwfQ%3D%3D--5ef8e07dac4997810fd69bb2d0c2616ee936f768)
 
 ## Features
 
