@@ -2,10 +2,11 @@
 
 The my-congress project is a quick-turnaround development project aimed at building a focused app that makes it easy for citizens to discover and learn about their elected representatives.
 
-![alt tag](https://raw.githubusercontent.com/ArcGIS/my-congress/master/my-congress.png?token=910495__eyJzY29wZSI6IlJhd0Jsb2I6QXJjR0lTL215LWNvbmdyZXNzL21hc3Rlci9teS1jb25ncmVzcy5wbmciLCJleHBpcmVzIjoxMzk3NzU2MTcwfQ%3D%3D--5ef8e07dac4997810fd69bb2d0c2616ee936f768)
+![My Congress Splash screen](https://raw.githubusercontent.com/Esri/my-congress/master/my-congress.png)
 
 ## Resources
-My Congress uses the <a href="https://sunlightlabs.github.io/congress/">Sunlight Labs Congress API</a>. Visit their site for further data resources and information. 
+
+My Congress uses the [Sunlight Labs Congress API](https://sunlightlabs.github.io/congress/). Visit their site for further data resources and information. 
 
 ## Issues
 
@@ -25,7 +26,7 @@ Licensed under the Apache License, Version 2.0 (the "License"); you may not use 
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-A copy of the license is available in the repository's [LICENSE.txt][] file.
+A copy of the license is available in the repository's [LICENSE.txt](https://github.com/Esri/my-congress/blob/master/LICENSE.txt) file.
 
 [](Esri Tags: Local-Government Local Government Online Apps Parcel Viewer)
 [](Esri Language: JavaScript)
