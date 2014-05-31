@@ -62,7 +62,7 @@ App.prototype.initMap = function() {
       outFields: ["CITY_NAME"]
     });
 
-    self.featureLayerGen = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/ArcGIS/rest/services/Congressional_Districts_outlines/FeatureServer/2",{
+    self.featureLayerGen = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/ArcGIS/rest/services/Congressional_Districts_outlines/FeatureServer/0",{
       outFields: ["*"]
     });
 
