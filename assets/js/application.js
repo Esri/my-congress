@@ -42,7 +42,7 @@ App.prototype.initMap = function() {
     //custom basemap
     esriConfig.defaults.map.basemaps.dotted = {
       baseMapLayers: [
-        { url: "//studio.esri.com/arcgis/rest/services/World/WorldBasemapBlack/MapServer" }
+        { url: "http://studio.esri.com/arcgis/rest/services/World/WorldBasemapBlack/MapServer" }
       ],
       title: "Dots"
     };
@@ -57,21 +57,21 @@ App.prototype.initMap = function() {
       self.map.disableScrollWheelZoom();
     });
 
-    self.placeNames = new FeatureLayer("//studio.esri.com/arcgis/rest/services/World/WorldLabelsWhite/MapServer/2", {
+    self.placeNames = new FeatureLayer("http://studio.esri.com/arcgis/rest/services/World/WorldLabelsWhite/MapServer/2", {
       mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
       outFields: ["CITY_NAME"]
     });
 
-    self.featureLayerGen = new FeatureLayer("//services1.arcgis.com/o90r8yeUBWgKSezU/ArcGIS/rest/services/Congressional_Districts_outlines/FeatureServer/0",{
+    self.featureLayerGen = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/ArcGIS/rest/services/Congressional_Districts_outlines/FeatureServer/0",{
       outFields: ["*"]
     });
 
-    self.featureLayer = new FeatureLayer("//services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/1",{
+    self.featureLayer = new FeatureLayer("http://services1.arcgis.com/o90r8yeUBWgKSezU/arcgis/rest/services/Congressional_Districts_outlines/FeatureServer/1",{
       mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
       outFields: ["*"]
     });
 
-    self.states = new FeatureLayer("//services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0", {
+    self.states = new FeatureLayer("http://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_States_Generalized/FeatureServer/0", {
       mode: esri.layers.FeatureLayer.MODE_SNAPSHOT,
       outFields: ["STATE_ABBR"],
       opacity:0
