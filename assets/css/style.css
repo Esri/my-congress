@@ -261,7 +261,7 @@ body {
 }
 
 .state-name{
-	max-width: 100px;
+	width: 105px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
