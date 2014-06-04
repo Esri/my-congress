@@ -260,6 +260,13 @@ body {
   box-shadow: 0px 0px 5px 0px #444;
 }
 
+.state-name{
+	max-width: 100px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+
 /*
 * Typeahead
 *
